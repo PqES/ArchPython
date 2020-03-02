@@ -1,0 +1,38 @@
+{
+    "controller" : {
+        "files" : [
+            "./example/controller/*.py"
+        ],
+        "allowed" : [
+            "model"
+        ]
+    },
+    "utils" : {
+        "files" : [
+            "./example/utils/database.py",
+            "./example/utils/utils.py"
+        ],
+        "forbidden" : [
+            "controller"
+        ]
+    },
+    "model" : {
+        "files" : [
+            "./example/model/*.py"
+        ],
+        "required" : [
+            "dao"
+        ]
+    },
+    "dao" : {
+        "files" : [
+            "./example/dao/*.py"
+        ]
+    },
+    "matplotlib" : {
+        "package" : "matplotlib"
+    },
+    "mongodb" : {
+        "package" : "mongodb"
+    }
+}
