@@ -1,8 +1,7 @@
 import sys
 import os
-from Models.rule import Rule
 from Utils.input_reader import InputReader
-from Utils.restriction_loader import RestrictionLoader
+from Utils.module_definition_loader import ModuleDefinitionLoader
 
 def get_file_absolute_path(file_path : str):
     current_path = os.path.dirname(os.path.realpath(__file__))
@@ -17,6 +16,7 @@ if __name__ == "__main__":
     file_path = get_file_absolute_path(sys.argv[1])
 
     file_content = InputReader.get_json_content(file_path)
-    restrictions = RestrictionLoader.get_restrictions(file_content)
+    module_definitions = ModuleDefinitionLoader.get_module_definitions(file_content)
 
-    print(file_content)
+    print(module_definitions)
+
