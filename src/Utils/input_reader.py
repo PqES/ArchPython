@@ -1,5 +1,4 @@
 import json
-import glob
 
 class InputReader:
     

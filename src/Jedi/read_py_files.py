@@ -1,4 +1,5 @@
 import os
+from Models.file import File
 
 class ReadPyFiles():
 
@@ -35,13 +36,15 @@ class ReadPyFiles():
     def get_files_path(self):
         return self.files_path
     
+    #Monta um dicionário de arquivos no qual a chave é um inteiro indice e seu conteúdo é um arquivo com seu nome, caminho e tipos
     def get_files_dictionary(self): 
         if self.files_dicitonary == {}:
             index = 0
             for index, file_name in enumerate(self.files_name):
                 if file_name in self.files_path[index]:
                     #TODO: Passar essa estrutura para uma classe separada
-                    self.files_dicitonary[index] = {'file': file_name, 'path':self.files_path[index], 'types': set()}
+                    file_info = File(file_name, self.files_path[index], set())
+                    self.files_dicitonary[index] = file_info
                 else:
                     raise Exception("Deu ruim na criação do dict")
                 index = index + 1

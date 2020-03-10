@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+from class_foo import Foo
+
+class Exemplo:
+
+	def __init__(self):
+		print('Sou o construtor da classe Exemplo')
+
+	def f(self):
+		print('Sou o método bola da classe Exemplo')
+		x = Foo()
+		dentro = ClasseDentroDeClasse()
+
+
+	class ClasseDentroDeClasse:
+		def __init__(self):
+			print('Sou o construtor da classe ClasseDentroDeClasse')
+
+		def dentro(self):
+			print('Sou o método dentro da classe ClasseDentroDeClasse')
+			xpto = Foo()
+
+
+
+def funcao_solta():
+	foo = Foo()
+
+def funcao_com_outra_dentro(valor):
+    def outra_dentro(item):
+        return item > valor
+    return outra_dentro
+

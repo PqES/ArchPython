@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+from class_a import A
+from class_exemplo import Exemplo
+
+def run():
+	a = A()
+	a.f()
+	exemplo = Exemplo()
+
+
+
+if __name__ == "__main__":
+	run()
+	

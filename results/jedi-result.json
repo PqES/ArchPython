@@ -1,0 +1,46 @@
+[
+    {
+        "file": "class_a.py",
+        "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/test_arthur/class_a.py",
+        "types": [
+            "B",
+            "A",
+            "Foo"
+        ]
+    },
+    {
+        "file": "class_foo.py",
+        "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/test_arthur/class_foo.py",
+        "types": [
+            "Foo"
+        ]
+    },
+    {
+        "file": "class_b.py",
+        "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/test_arthur/class_b.py",
+        "types": [
+            "B",
+            "C"
+        ]
+    },
+    {
+        "file": "class_d.py",
+        "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/test_arthur/class_d.py",
+        "types": [
+            "D"
+        ]
+    },
+    {
+        "file": "class_c.py",
+        "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/test_arthur/class_c.py",
+        "types": [
+            "NoneType",
+            "str",
+            "D",
+            "int",
+            "bool",
+            "float",
+            "C"
+        ]
+    }
+]
