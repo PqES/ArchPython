@@ -3,6 +3,7 @@ import sys
 from Jedi.read_py_files import ReadPyFiles
 from Enums.jedi_error_enum import JediErrorEnum
 from Utils.json_writer import JsonWriter
+from Models.inference import Inference
 
 #TODO mudar o nome dessa classe
 class Skywalker(object):
@@ -10,6 +11,7 @@ class Skywalker(object):
     def __init__(self, project_root_folder):
         self.project_root_folder = project_root_folder
         self.files = None
+        self.inferences = {}
     
     def run_jedi(self):
         #Lê os arquivos
@@ -33,25 +35,31 @@ class Skywalker(object):
         for key in self.files:
             file = self.files[key]
 
-            script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True)
-            # script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True, definitions=True, references=True)
+            # script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True)
+            jedai = jedi.Script(path=file.file_path)
 
-            # script_names = jedi.Script(path=file.file_path).get_names()
-
+            script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True, definitions=True)
 
             for definition in script_names:
-                inferences = definition.infer()
-                for inference in inferences:
-                    if not self.__should_ignore_inference(inference, file):
-                        self.files[key].types.add(inference.name)
+
+                if not self.__should_ignore_definition(definition, file):
+                    inferences = definition.infer()
+
+                    file_name = definition.module_name
+                    variable_name = definition.name
+                    inference_key = definition.full_name if definition.full_name != None else definition.desc_with_module
+
+                    self.inferences[inference_key] = Inference(file_name, variable_name)
+
+                    for inference in inferences:
+                        self.inferences[inference_key].add_type(inference.name)
+            pass
+
     
-    def __should_ignore_inference(self, inference, file):
-        if inference.type == "function":
-            return True
-        
-        # if inference.module_path == file.file_path:
-        #     return True
-        return False
+    def __should_ignore_definition(self, inference, file):
+        if inference.type == "statement" or inference.type == "param":
+            return False
+        return True
     
     def get_jedi_results(self):
         for index in self.files:
