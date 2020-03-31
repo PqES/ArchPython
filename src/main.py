@@ -1,3 +1,6 @@
+#TODO: Refatorar esse código
+
+
 import sys
 import os
 from Utils.input_reader import InputReader
@@ -21,11 +24,18 @@ def read_module_definition_file(module_definition_json_path):
     return module_definitions
 
 #TODO Remover essa função deste arquivo
+#TODO Renomear essa função
 def read_project_folder(target_project_root_path):
     skywalker = Skywalker(target_project_root_path)
     skywalker.run_jedi()
-    # skywalker.get_jedi_results()
-    skywalker.register_jedi_results()
+    return skywalker.get_files()
+
+#Função que cruza as informações do modulo com as inferencias realizadas
+def cross_information(module_definitions, files):
+    pass
+
+
+
 
 
 if __name__ == "__main__":
@@ -35,8 +45,9 @@ if __name__ == "__main__":
     module_definition_file = sys.argv[1]
     target_project_root_path = sys.argv[2]
     
-    # module_definitions = read_module_definition_file(module_definition_file)
-    project_folder = read_project_folder(target_project_root_path)
+    module_definitions = read_module_definition_file(module_definition_file)
+    files = read_project_folder(target_project_root_path)
+    cross_information(module_definitions, files)
     
     
 

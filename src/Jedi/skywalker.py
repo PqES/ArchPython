@@ -18,7 +18,12 @@ class Skywalker(object):
         self.__search_project_folder()
         #Faz a inferência
         self.__make_inference()
-        #Entrega arquivos de uma maneira legível
+    
+    def get_inferences(self):
+        return self.inferences
+    
+    def get_files(self):
+        return self.files
     
     def __search_project_folder(self):
         read_py_files = ReadPyFiles(self.project_root_folder)
@@ -42,18 +47,26 @@ class Skywalker(object):
 
             for definition in script_names:
 
+                goto_teste = definition.goto(follow_imports=True, follow_builtin_imports=True)
+
+
                 if not self.__should_ignore_definition(definition, file):
                     inferences = definition.infer()
+                    goto_teste = definition.goto(follow_imports=True, follow_builtin_imports=True)
 
                     file_name = definition.module_name
                     variable_name = definition.name
                     inference_key = definition.full_name if definition.full_name != None else definition.desc_with_module
 
-                    self.inferences[inference_key] = Inference(file_name, variable_name)
+                    self.inferences[inference_key] = Inference(file_name, variable_name, inference_key)
 
                     for inference in inferences:
                         self.inferences[inference_key].add_type(inference.name)
-            pass
+                        self.files[key].types.add(inference.name)
+            
+            #Debug Proposes
+            for inference in self.inferences.keys():
+                self.inferences[inference].print_inference()
 
     
     def __should_ignore_definition(self, inference, file):
