@@ -1,8 +1,8 @@
 #TODO: Refatorar esse código
 
-
 import sys
 import os
+import json
 from Utils.input_reader import InputReader
 from Utils.module_definition_loader import ModuleDefinitionLoader
 from Jedi.skywalker import Skywalker
@@ -34,6 +34,14 @@ def read_project_folder(target_project_root_path):
 def cross_information(module_definitions, files):
     pass
 
+def write_files(files):
+    json_dict = {}
+    for file in files.values():
+        json_dict[file.file_name] = list(file.types)
+    
+    with open('data.json', 'w') as output:
+        json.dump(json_dict, output)
+
 
 
 
@@ -47,6 +55,7 @@ if __name__ == "__main__":
     
     module_definitions = read_module_definition_file(module_definition_file)
     files = read_project_folder(target_project_root_path)
+    write_files(files)
     cross_information(module_definitions, files)
     
     

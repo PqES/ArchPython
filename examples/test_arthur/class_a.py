@@ -14,3 +14,5 @@ class A:
 		b = B()
 		b.g(x, self)
 
+A().f()
+

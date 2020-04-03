@@ -7,4 +7,4 @@ class D:
 
 	def m(self, k):
 		print('Sou o método m da classe D')
-		print(('Fui chamado com parametro p valendo {} com tipo {}').format(p, type(p)))
+		print(('Fui chamado com parametro p valendo {} com tipo {}').format(k, type(k)))
