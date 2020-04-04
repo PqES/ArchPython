@@ -13,6 +13,7 @@ class Skywalker(object):
         self.files = None
         self.inferences = {}
         self.list_of_tuples = []
+        self.list_of_calls = [] #Lista de chamadas para outros arquivos.
     
     def run_jedi(self):
         #Lê os arquivos
@@ -44,16 +45,35 @@ class Skywalker(object):
             # script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True)
 
             script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True, definitions=True, references=True)
+            teste2 = jedi.Script(path=file.file_path)
+            teste = teste2.get_signatures()
+
+            should_verify_params = False
+            current_function_name = None
+            goto_function_name = None
 
             for definition in script_names:
+
+                if should_verify_params and current_function_name != None and goto_function_name != None: 
+                    if definition._name.tree_name.parent.type == "arglist" or definition._name.tree_name.parent.type == "trailer":
+                        call_tuple = (current_function_name, goto_function_name, definition.name)
+                        self.list_of_calls.append(call_tuple)
+                    else:
+                        should_verify_params = False
+                        current_function_name = None
+                        goto_function_name = None
+
+                b = definition.get_signatures()
 
                 goto_teste = definition.goto(follow_imports=True, follow_builtin_imports=True)
 
                 if (len(goto_teste) > 0):
                     for goto in goto_teste:
                         #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso 
-                        if goto.type == "function":
-                            print("TODO: Registrar chamada de função")
+                        if goto.type == "function" and goto != definition:
+                            current_function_name = self.__generate_function_name(definition)
+                            goto_function_name = self.__generate_function_name(goto)
+                            should_verify_params = True
                     pass
 
 
@@ -74,12 +94,16 @@ class Skywalker(object):
                     self.inferences[inference_key] = Inference(file_name, variable_name, inference_key)
 
                     for inference in inferences:
+
+                        #Esse cara vai ignorar o caso no qual é a instanciação de uma classe
+                        # Exemplo: Classe()
                         if (inference.name == definition.name):
                             continue
                         inference_tuple = self.__create_tuple_from_inference(definition, inference)
                         self.__add_to_list_of_tuples(inference_tuple)
                         self.inferences[inference_key].add_type(inference.name)
                         self.files[key].types.add(inference.name)
+
             
             #Debug Proposes
             for inference in self.inferences.keys():
