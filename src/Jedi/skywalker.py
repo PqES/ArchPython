@@ -5,6 +5,7 @@ from Jedi.read_py_files import ReadPyFiles
 from Enums.jedi_error_enum import JediErrorEnum
 from Utils.json_writer import JsonWriter
 from Models.inference import Inference
+from Models.call import Call
 
 #TODO mudar o nome dessa classe
 class Skywalker(object):
@@ -13,23 +14,26 @@ class Skywalker(object):
         self.project_root_folder = project_root_folder
         self.files = None
         self.inferences = {}
-        self.list_of_inferences_tuples = []
+        self.list_of_inferences = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
     
     def run_jedi(self):
         #Lê os arquivos
         self.__search_project_folder()
-        #Faz a inferência
-        self.__make_inference()
+        
+        #Faz o passe base da inferência
+        self.__base_step()
 
-        self.__recursive_step(len(self.list_of_inferences_tuples))
+        #faz o passo recursivo da inferência
+        self.__recursive_step(len(self.list_of_inferences))
 
+        #escreve as inferências em um arquivo json
         self.__write_list_of_inferences()
     
     def __write_list_of_inferences(self):
         json_content = []
-        for inference in self.list_of_inferences_tuples:
-            json_content.append(list(inference))
+        for inference in self.list_of_inferences:
+            json_content.append(list(inference.get_tuple_representation()))
         
         with open('data.json', 'w') as output:
             json.dump(json_content, output)
@@ -44,62 +48,59 @@ class Skywalker(object):
     def __search_project_folder(self):
         read_py_files = ReadPyFiles(self.project_root_folder)
         read_py_files.find_pys()
-        self.files = read_py_files.get_files_dictionary()
+        self.files = read_py_files.get_files_path()
     
-    #TODO tratar quando tiver mais de dois arquivos em uma classe
-    #TODO pegar o método que está chamando
-    #TODO pegar o arquivo que está chamando
-    def __make_inference(self):
+    def __base_step(self):
         if self.files == None:
             raise Exception(JediErrorEnum.NO_FILES_FOUND.value)
 
-        for key in self.files:
-            file = self.files[key]
-
-            # script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True)
-
-            script_names = jedi.Script(path=file.file_path).get_names(all_scopes=True, definitions=True, references=True)
-            teste2 = jedi.Script(path=file.file_path)
-            teste = teste2.get_signatures()
+        for file_path  in self.files:
+            script_names = jedi.Script(path=file_path).get_names(all_scopes=True, definitions=True, references=True)
 
             should_verify_params = False
-            current_function_name = None
-            goto_function_name = None
+            current_definition = None
+            current_goto = None
             current_goto_params_names = []
 
             for definition in script_names:
 
-                if should_verify_params and current_function_name != None and goto_function_name != None: 
+                if should_verify_params and current_definition and current_goto:
                     if definition._name.tree_name.parent.type == "arglist" or definition._name.tree_name.parent.type == "trailer":
-                        call_tuple = (current_function_name, goto_function_name, definition.name, current_goto_params_names.pop().name)
-                        self.list_of_calls.append(call_tuple)
+                        
+                        file_path_from = current_definition.module_path
+                        variable_from = definition.name
+                        current_definition_full_name = self.__generate_function_name(current_definition)
+
+                        file_path_to = current_goto.module_path
+                        variable_to = current_goto_params_names.pop().name
+                        current_goto_full_name = self.__generate_function_name(current_goto)
+
+
+                        call = Call(file_path_from, variable_from, current_definition_full_name, file_path_to, variable_to, current_goto_full_name)
+                        self.list_of_calls.append(call)
                     else:
                         should_verify_params = False
-                        current_function_name = None
-                        goto_function_name = None
+                        current_definition = None
+                        current_definition_full_name = None
 
-                b = definition.get_signatures()
+                definitions_goto = definition.goto(follow_imports=True, follow_builtin_imports=True)
 
-                goto_teste = definition.goto(follow_imports=True, follow_builtin_imports=True)
-
-                if (len(goto_teste) > 0):
-                    for goto in goto_teste:
+                if (len(definitions_goto) > 0):
+                    for goto in definitions_goto:
                         #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso 
                         if goto.type == "function" and goto != definition:
-                            current_function_name = self.__generate_function_name(definition)
-                            goto_function_name = self.__generate_function_name(goto)
+                            current_definition = definition
+                            current_goto = goto
                             current_goto_params_names = goto.params[::-1]
+
                             should_verify_params = True
 
 
-                if not self.__should_ignore_definition(definition, file):
+                if not self.__should_ignore_definition(definition):
                     inferences = definition.infer()
 
                     file_name = definition.module_name
                     variable_name = definition.name
-                    inference_key = definition.full_name if definition.full_name != None else definition.desc_with_module
-
-                    self.inferences[inference_key] = Inference(file_name, variable_name, inference_key)
 
                     for inference in inferences:
 
@@ -107,45 +108,40 @@ class Skywalker(object):
                         # Exemplo: Classe()
                         if (inference.name == definition.name):
                             continue
-                        inference_tuple = self.__create_tuple_from_inference(definition, inference)
-                        self.__add_to_list_of_tuples(inference_tuple)
-                        self.inferences[inference_key].add_type(inference.name)
-                        self.files[key].types.add(inference.name)
-
-            
-            #Debug Proposes
-            for inference in self.inferences.keys():
-                self.inferences[inference].print_inference()
+                        
+                        inference_object = self.__create_inference(definition, inference)
+                        self.__add_to_list_of_inferences(inference_object)
 
         pass
 
     def __recursive_step(self, current_len_of_types):
         for call in self.list_of_calls:
-            method = call[0]
-            function_called = call[1]
-            variable = call[2]
 
-            infered_types = self.__find_inference(method, variable)
+            infered_types = self.__find_inference(call)
 
             if infered_types != []:
                 for infered_type in infered_types:
-                    inference_tuple = (function_called, call[3], infered_type)
-                    self.__add_to_list_of_tuples(inference_tuple)
+                    new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type)
+                    self.__add_to_list_of_inferences(new_inference)
         
-        if len(self.list_of_inferences_tuples) != current_len_of_types:
-            self.__recursive_step(len(self.list_of_inferences_tuples))
+        if len(self.list_of_inferences) != current_len_of_types:
+            self.__recursive_step(len(self.list_of_inferences))
+        
+        pass
         
     
-    def __find_inference(self, method, variable):
+    def __find_inference(self, call):
         all_inferences = []
-        for inference in self.list_of_inferences_tuples:
-            if inference[0] == method and inference[1] == variable:
-                all_inferences.append(inference[2])
+        for inference in self.list_of_inferences:
+            if inference.inference_fullname == call.full_name_from and inference.variable_name == call.variable_from:
+                all_inferences.append(inference.variable_type)
         return all_inferences
 
-    def __add_to_list_of_tuples(self,inference):
-        if not inference in self.list_of_inferences_tuples:
-            self.list_of_inferences_tuples.append(inference)
+    def __add_to_list_of_inferences(self,new_inference):
+        for inference in self.list_of_inferences:
+            if new_inference.get_key() == inference.get_key():
+                return
+        self.list_of_inferences.append(new_inference)
 
     def __create_tuple_from_self(self, definition):
         file_class_function_key = self.__generate_function_name(definition)
@@ -153,13 +149,19 @@ class Skywalker(object):
         inference = self.__find_current_class_name(definition)
         return (file_class_function_key, variable_name, inference)
     
-    def __create_tuple_from_inference(self, definition, inference):
-        file_class_function_key = self.__generate_function_name(definition)
+    def __create_inference(self, definition, inference):
+        file_path = definition.module_path
+        file_name = definition.module_path.split("/")[-1].replace('.py', '')
+        class_name = self.__find_current_class_name(definition)
+        function_name = self.__find_current_function_name(definition)
         variable_name = definition.name
-        inference = inference.name
-        return (file_class_function_key, variable_name, inference)
+        variable_type = inference.name
+
+        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type)
+
+        return inference
     
-    def __should_ignore_definition(self, inference, file):
+    def __should_ignore_definition(self, inference):
         if inference.name == "__init__":
             return True
         if inference.type == "statement" or inference.type == "param":

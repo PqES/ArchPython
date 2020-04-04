@@ -1,2 +1,4 @@
 class Foo:
-    pass
+    
+    def __init__(self, new_vaaaaar):
+        pass
