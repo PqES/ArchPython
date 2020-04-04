@@ -1,5 +1,6 @@
 import jedi
 import sys
+import json
 from Jedi.read_py_files import ReadPyFiles
 from Enums.jedi_error_enum import JediErrorEnum
 from Utils.json_writer import JsonWriter
@@ -12,7 +13,7 @@ class Skywalker(object):
         self.project_root_folder = project_root_folder
         self.files = None
         self.inferences = {}
-        self.list_of_tuples = []
+        self.list_of_inferences_tuples = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
     
     def run_jedi(self):
@@ -20,7 +21,20 @@ class Skywalker(object):
         self.__search_project_folder()
         #Faz a inferência
         self.__make_inference()
+
+        self.__recursive_step(len(self.list_of_inferences_tuples))
+
+        self.__write_list_of_inferences()
     
+    def __write_list_of_inferences(self):
+        json_content = []
+        for inference in self.list_of_inferences_tuples:
+            json_content.append(list(inference))
+        
+        with open('data.json', 'w') as output:
+            json.dump(json_content, output)
+
+
     def get_inferences(self):
         return self.inferences
     
@@ -51,12 +65,13 @@ class Skywalker(object):
             should_verify_params = False
             current_function_name = None
             goto_function_name = None
+            current_goto_params_names = []
 
             for definition in script_names:
 
                 if should_verify_params and current_function_name != None and goto_function_name != None: 
                     if definition._name.tree_name.parent.type == "arglist" or definition._name.tree_name.parent.type == "trailer":
-                        call_tuple = (current_function_name, goto_function_name, definition.name)
+                        call_tuple = (current_function_name, goto_function_name, definition.name, current_goto_params_names.pop().name)
                         self.list_of_calls.append(call_tuple)
                     else:
                         should_verify_params = False
@@ -73,19 +88,12 @@ class Skywalker(object):
                         if goto.type == "function" and goto != definition:
                             current_function_name = self.__generate_function_name(definition)
                             goto_function_name = self.__generate_function_name(goto)
+                            current_goto_params_names = goto.params[::-1]
                             should_verify_params = True
-                    pass
 
 
                 if not self.__should_ignore_definition(definition, file):
                     inferences = definition.infer()
-
-                    #Pegar esse cara SOMENTE se ele for passado como parâmetro para um outra função
-                    #Checa se é self. Essa função é "safe" pq self é uma palavra reservada
-                    # if len(inferences) == 0 and definition.type == "statement" and definition.name == "self":
-                    #     inference_tuple = self.__create_tuple_from_self(definition)
-                    #     list_of_tuples.append(inference_tuple)
-                    #     continue
 
                     file_name = definition.module_name
                     variable_name = definition.name
@@ -111,9 +119,33 @@ class Skywalker(object):
 
         pass
 
+    def __recursive_step(self, current_len_of_types):
+        for call in self.list_of_calls:
+            method = call[0]
+            function_called = call[1]
+            variable = call[2]
+
+            infered_types = self.__find_inference(method, variable)
+
+            if infered_types != []:
+                for infered_type in infered_types:
+                    inference_tuple = (function_called, call[3], infered_type)
+                    self.__add_to_list_of_tuples(inference_tuple)
+        
+        if len(self.list_of_inferences_tuples) != current_len_of_types:
+            self.__recursive_step(len(self.list_of_inferences_tuples))
+        
+    
+    def __find_inference(self, method, variable):
+        all_inferences = []
+        for inference in self.list_of_inferences_tuples:
+            if inference[0] == method and inference[1] == variable:
+                all_inferences.append(inference[2])
+        return all_inferences
+
     def __add_to_list_of_tuples(self,inference):
-        if not inference in self.list_of_tuples:
-            self.list_of_tuples.append(inference)
+        if not inference in self.list_of_inferences_tuples:
+            self.list_of_inferences_tuples.append(inference)
 
     def __create_tuple_from_self(self, definition):
         file_class_function_key = self.__generate_function_name(definition)
@@ -163,28 +195,6 @@ class Skywalker(object):
         for index in self.files:
             list_of_files_as_dict.append(self.files[index].get_as_dict())
         JsonWriter.write_json(list_of_files_as_dict)
-
-
-# if __name__ == "__main__":
-#     project_root_folder = "/home/eduardol/UFLA/tcc/arquivos-arthur/dataset/sistema0"
-
-#     for key in files:
-#         file_dict = files[key]
-
-#         # script_names = jedi.Script(path=file_dict['path']).get_names(all_scopes=True, definitions=True, references=True)
-#         script_names = jedi.Script(path=file_dict['path']).get_names()
-
-
-#         for definition in script_names:
-#             inferences = definition.infer()
-#             for inference in inferences:
-#                 files[key]['types'].add(inference.name)
-
-#             # inference = definition.infer()[0].name
-#             # files[key]['types'].append(inference)
-        
-
-#     a = 2
 
 
 

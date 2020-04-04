@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     module_definitions = read_module_definition_file(module_definition_file)
     files = read_project_folder(target_project_root_path)
-    write_files(files)
+    # write_files(files)
     cross_information(module_definitions, files)
     
     
