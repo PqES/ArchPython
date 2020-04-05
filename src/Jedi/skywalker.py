@@ -40,7 +40,7 @@ class Skywalker(object):
 
 
     def get_inferences(self):
-        return self.inferences
+        return self.list_of_inferences
     
     def get_files(self):
         return self.files
@@ -112,9 +112,10 @@ class Skywalker(object):
                         inference_object = self.__create_inference(definition, inference)
                         self.__add_to_list_of_inferences(inference_object)
 
-        pass
+        print("End of base step")
 
     def __recursive_step(self, current_len_of_types):
+
         for call in self.list_of_calls:
 
             infered_types = self.__find_inference(call)
@@ -127,7 +128,7 @@ class Skywalker(object):
         if len(self.list_of_inferences) != current_len_of_types:
             self.__recursive_step(len(self.list_of_inferences))
         
-        pass
+        print("End of recursive step")
         
     
     def __find_inference(self, call):

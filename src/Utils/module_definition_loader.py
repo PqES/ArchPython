@@ -1,4 +1,5 @@
 import sys
+import os
 from Models.module import Module
 from Enums.module_definition_error_enum import ModuleDefinitionErrorEnum
 from Enums.module_definition_enum import ModuleDefinitionEnum
@@ -22,11 +23,28 @@ class ModuleDefinitionLoader(object):
 
     @staticmethod
     def __try_get_value_from_module(file_content, module, key):
+        if key == ModuleDefinitionEnum.FILES_KEYWORD.value:
+            return ModuleDefinitionLoader.__process_file_paths(file_content, module, key)
         try:
             return file_content[module][key]
         except KeyError:
             return None
-
+    
+    @staticmethod
+    def __process_file_paths(file_content, module, key):
+        current_path = os.getcwd()
+        files = file_content[module][key]
+        complete_paths = []
+        for file_path in files:
+            teste = file_path[:1]
+            if file_path[:2] == "./":
+                file_path = file_path[2:]
+            complete_path = os.path.join(current_path, file_path)
+            if os.path.isfile(complete_path):
+                complete_paths.append(os.path.join(current_path, file_path))
+            else :
+                raise Exception(ModuleDefinitionErrorEnum.FILE_DOESNT_EXIST.value + ": " + complete_path)
+        return complete_paths
     
     @staticmethod
     def __create_module(file_content, module):
