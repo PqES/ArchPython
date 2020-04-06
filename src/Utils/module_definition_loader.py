@@ -36,7 +36,6 @@ class ModuleDefinitionLoader(object):
         files = file_content[module][key]
         complete_paths = []
         for file_path in files:
-            teste = file_path[:1]
             if file_path[:2] == "./":
                 file_path = file_path[2:]
             complete_path = os.path.join(current_path, file_path)
@@ -55,8 +54,6 @@ class ModuleDefinitionLoader(object):
         forbidden = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value)
         required = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.REQUIRED_KEYWORD.value)
         return Module(name, package, files, allowed, forbidden, required)
-
-
 
     
     @staticmethod

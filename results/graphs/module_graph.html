@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <title>Vis Network | Basic usage</title>
+
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+  <style type="text/css">
+    #mynetwork {
+      width: "100%";
+      height: 600px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+
+<p>
+  Create a simple network with some nodes and edges.
+</p>
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+  // create an array with nodes
+  var nodes = new vis.DataSet([{'id': 0, 'label': 'A'}, {'id': 1, 'label': 'B'}, {'id': 2, 'label': 'C'}, {'id': 3, 'label': 'D'}, {'id': 4, 'label': 'Foo'}]);
+
+  // create an array with edges
+  var edges = new vis.DataSet([{'from': 0, 'to': 1, 'arrows': 'to', 'color': 'green'}, {'from': 0, 'to': 4, 'arrows': 'to', 'color': 'green'}, {'from': 0, 'to': 0, 'arrows': 'to', 'color': 'green'}, {'from': 1, 'to': 0, 'arrows': 'to', 'color': 'green'}, {'from': 1, 'to': 4, 'arrows': 'to', 'color': 'green'}, {'from': 2, 'to': 0, 'arrows': 'to', 'color': 'blue'}, {'from': 2, 'to': 1, 'arrows': 'to', 'color': 'blue'}, {'from': 2, 'to': 4, 'arrows': 'to', 'color': 'red'}, {'from': 3, 'to': 4, 'arrows': 'to', 'color': 'red'}]);
+
+  // create a network
+  var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+  var options = {
+    layout: {
+      hierarchical: {
+        sortMethod: 'directed',
+        shakeTowards: 'leaves',
+        direction: "LR",
+        levelSeparation: 150,
+        nodeSpacing: 100,
+        treeSpacing: 200,
+        blockShifting: true,
+        edgeMinimization: false,
+        parentCentralization: false,
+      }
+    },
+    edges: {
+      smooth: false,
+    },
+    physics: {
+      enabled: true,
+      hierarchicalRepulsion: {
+        centralGravity: 0.0,
+        springLength: 200,
+        springConstant: 0.01,
+        nodeDistance: 150,
+        damping: 0.09
+      }
+    }
+    };
+  var network = new vis.Network(container, data, options);
+</script>
+
+
+</body>
+</html>

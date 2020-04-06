@@ -7,6 +7,9 @@ from Utils.input_reader import InputReader
 from Utils.module_definition_loader import ModuleDefinitionLoader
 from Jedi.skywalker import Skywalker
 from Utils.conformity_checker import ConformityChecker
+from Utils.vis_graph_creator_util import VisGraphCreatorUtil
+from Commons.graphs_creators.module_graph_creator import ModuleGraphCreator
+
 
 #TODO Remover essa função deste arquivo
 def get_file_absolute_path(module_definition_json_path : str):
@@ -21,6 +24,11 @@ def read_module_definition_file(module_definition_json_path):
 
     file_content = InputReader.get_json_content(module_definition_json_path)
     module_definitions = ModuleDefinitionLoader.get_module_definitions(file_content)
+
+    graph = ModuleGraphCreator(module_definitions).create_graph_from_module()
+
+    VisGraphCreatorUtil.create_vis_graph(graph)
+
 
     return module_definitions
 
@@ -57,9 +65,9 @@ if __name__ == "__main__":
     target_project_root_path = sys.argv[2]
     
     module_definitions = read_module_definition_file(module_definition_file)
-    inferences = read_project_folder(target_project_root_path)
+    # inferences = read_project_folder(target_project_root_path)
     # write_files(files)
-    cross_information(module_definitions, inferences)
+    # cross_information(module_definitions, inferences)
     
     
 
