@@ -1,0 +1,26 @@
+[
+  {
+    "Module": "B",
+    "Problem_Code": "ALLOWED_RESTRICTION_BROKEN",
+    "Problem_Message": "An unallowed restriction was used",
+    "Types": "{'C'}"
+  },
+  {
+    "Module": "C",
+    "Problem_Code": "FORBIDDEN_RESTRICTION_BROKEN",
+    "Problem_Message": "A forbidden restriction was used",
+    "Types": "{'Foo'}"
+  },
+  {
+    "Module": "C",
+    "Problem_Code": "REQUIRED_RESTRICTION_BROKEN",
+    "Problem_Message": "A mandatory restriction was not used",
+    "Types": "{'B'}"
+  },
+  {
+    "Module": "D",
+    "Problem_Code": "FORBIDDEN_RESTRICTION_BROKEN",
+    "Problem_Message": "A forbidden restriction was used",
+    "Types": "{'Foo'}"
+  }
+]

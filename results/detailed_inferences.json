@@ -1,0 +1,98 @@
+[
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_a.py",
+    "file_name": "class_a",
+    "class_name": "A",
+    "class_function": "f",
+    "variable_name": "x",
+    "variable_inferred_type": "Foo"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_a.py",
+    "file_name": "class_a",
+    "class_name": "A",
+    "class_function": "f",
+    "variable_name": "b",
+    "variable_inferred_type": "B"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_a.py",
+    "file_name": "class_a",
+    "class_name": "A",
+    "class_function": "f",
+    "variable_name": "self",
+    "variable_inferred_type": "A"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_foo.py",
+    "file_name": "class_foo",
+    "class_name": "Foo",
+    "class_function": "__init__",
+    "variable_name": "self",
+    "variable_inferred_type": "Foo"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_b.py",
+    "file_name": "class_b",
+    "class_name": "B",
+    "class_function": "g",
+    "variable_name": "c",
+    "variable_inferred_type": "C"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_c.py",
+    "file_name": "class_c",
+    "class_name": "C",
+    "class_function": "h",
+    "variable_name": "d",
+    "variable_inferred_type": "D"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_b.py",
+    "file_name": "class_b",
+    "class_name": "B",
+    "class_function": "g",
+    "variable_name": "x",
+    "variable_inferred_type": "Foo"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_b.py",
+    "file_name": "class_b",
+    "class_name": "B",
+    "class_function": "g",
+    "variable_name": "z",
+    "variable_inferred_type": "A"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_c.py",
+    "file_name": "class_c",
+    "class_name": "C",
+    "class_function": "h",
+    "variable_name": "y",
+    "variable_inferred_type": "Foo"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_c.py",
+    "file_name": "class_c",
+    "class_name": "C",
+    "class_function": "h",
+    "variable_name": "y",
+    "variable_inferred_type": "A"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_d.py",
+    "file_name": "class_d",
+    "class_name": "D",
+    "class_function": "m",
+    "variable_name": "y",
+    "variable_inferred_type": "Foo"
+  },
+  {
+    "file_path": "/home/eduardol/UFLA/tcc/ArchPython/examples/exemplo_artigo/class_d.py",
+    "file_name": "class_d",
+    "class_name": "D",
+    "class_function": "m",
+    "variable_name": "y",
+    "variable_inferred_type": "A"
+  }
+]

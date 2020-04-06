@@ -10,6 +10,7 @@ class Module:
         self.required = required
 
         self.__types_used = set()
+        self.__problems = []
 
     def add_used_type(self, type):
         self.__types_used.add(type)
@@ -34,3 +35,6 @@ class Module:
     
     def get_types_used(self):
         return self.__types_used
+    
+    def report_problem(self, problem):
+        self.__problems.append(problem)

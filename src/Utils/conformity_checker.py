@@ -1,3 +1,7 @@
+import json
+from Models.problem import Problem
+from Enums.problems_enum import ProblemsEnum
+
 class ConformityChecker:
 
     def __init__(self, module_definitions, inferences):
@@ -5,6 +9,7 @@ class ConformityChecker:
         self.inferences = inferences
         
         self.__file_types_cache = {}
+        self.__problems = []
     
     def check_conformity(self):
         
@@ -16,7 +21,13 @@ class ConformityChecker:
 
         #Verificar conformidade
         self.__check_conformity()
+
+        self.__print_problems()
+
+        self.__write_problems()
+
         pass
+
 
     # Cria um dicionário do tipo <caminho_arquivo> -> <conjunto de tipos>
     def __create_file_types_cache(self):
@@ -55,12 +66,10 @@ class ConformityChecker:
 
         all_allowed_types = allowed_set.union(required_set)
 
-        if all_allowed_types == used_set:
-            print("Modulo: " + module.name + " OK")
-        else:
-            print("Modulo: " + module.name + " NOT OK")
-            problems = used_set.difference(all_allowed_types)
-            print("Problemas: " +  str(problems))
+        if all_allowed_types != used_set:
+            not_allowed_types = used_set.difference(all_allowed_types)
+            problem = Problem(ProblemsEnum.ALLOWED_RESTRICTION_BROKEN.value, module, not_allowed_types)
+            self.__report_problem(problem, module)
 
     def __check_forbidden(self, module):
         used_set = module.get_types_used()
@@ -68,11 +77,9 @@ class ConformityChecker:
 
         forbidden_types_being_used = used_set.intersection(forbidden_set)
 
-        if len(forbidden_types_being_used) == 0:
-            print(f"Checking forbidden on module {module.name} is OK")
-        else:
-            print(f"Checking forbidden on module {module.name} is NOT OK")
-            print(f"Forbidden types beign used {str(forbidden_types_being_used)}")
+        if len(forbidden_types_being_used) != 0:
+            problem = Problem(ProblemsEnum.FORBIDDEN_RESTRICTION_BROKEN.value, module, forbidden_types_being_used)
+            self.__report_problem(problem, module)
 
     
     def __check_required(self, module):
@@ -84,8 +91,26 @@ class ConformityChecker:
         # Se essa intersecção acontecer, significa que todos que são
         # requeridos então de fato sendo usados. Logo, ele passa nesse
         # check
-        if required_and_used_set == required_set:
-            print(f"Check required for module {module.name} is OK")
-        else: 
-            print(f"Check required for module {module.name} NOT OK")
-            print(f"{module.name} ins't using {str(required_set.difference(required_and_used_set))}")
+        if required_and_used_set != required_set:
+            required_not_used = required_set.difference(required_and_used_set)
+            problem = Problem(ProblemsEnum.REQUIRED_RESTRICTION_BROKEN.value, module, required_not_used)
+            self.__report_problem(problem, module)
+    
+    def __report_problem(self, problem, module):
+        self.__problems.append(problem)
+        module.report_problem(problem)
+    
+    def __print_problems(self):
+        for problem in self.__problems:
+            problem.print_problem()
+    
+    def __write_problems(self):
+        json_content = []
+        for problem in self.__problems:
+            json_content.append(problem.get_problem_as_dict())
+        
+        with open('./results/problems.json', 'w') as output:
+            json.dump(json_content, output)
+    
+
+

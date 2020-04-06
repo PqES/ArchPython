@@ -3,7 +3,6 @@ import sys
 import json
 from Jedi.read_py_files import ReadPyFiles
 from Enums.jedi_error_enum import JediErrorEnum
-from Utils.json_writer import JsonWriter
 from Models.inference import Inference
 from Models.call import Call
 
@@ -29,13 +28,24 @@ class Skywalker(object):
 
         #escreve as inferências em um arquivo json
         self.__write_list_of_inferences()
+
+        #escreve as inferências de uma maneira mais detalhada
+        self.__write_list_of_detailed_inferences()
     
     def __write_list_of_inferences(self):
         json_content = []
         for inference in self.list_of_inferences:
             json_content.append(list(inference.get_tuple_representation()))
         
-        with open('data.json', 'w') as output:
+        with open('./results/inferences.json', 'w') as output:
+            json.dump(json_content, output)
+        
+    def __write_list_of_detailed_inferences(self):
+        json_content = []
+        for inference in self.list_of_inferences:
+            json_content.append(inference.get_detailed_inference())
+        
+        with open('./results/detailed_inferences.json', 'w') as output:
             json.dump(json_content, output)
 
 
@@ -193,11 +203,6 @@ class Skywalker(object):
         for index in self.files:
             print(self.files[index].get_as_dict())
     
-    def register_jedi_results(self):
-        list_of_files_as_dict = []
-        for index in self.files:
-            list_of_files_as_dict.append(self.files[index].get_as_dict())
-        JsonWriter.write_json(list_of_files_as_dict)
 
 
 

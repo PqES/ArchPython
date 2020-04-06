@@ -16,5 +16,15 @@ class Inference(object):
     
     def get_key(self):
         return self.inference_fullname + self.variable_name + self.variable_type
+    
+    def get_detailed_inference(self):
+        return {
+            "file_path" : self.file_path,
+            "file_name": self.file_name,
+            "class_name": self.class_name,
+            "class_function": self.class_function,
+            "variable_name": self.variable_name,
+            "variable_inferred_type": self.variable_type
+        }
 
 
