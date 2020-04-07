@@ -132,7 +132,8 @@ class Skywalker(object):
 
             if infered_types != []:
                 for infered_type in infered_types:
-                    new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type)
+                    # inference_path = infered_type.module_path if not infered_type.in_builtin_module() else infered_type.full_name
+                    new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type.variable_type, infered_type.inference_variable_path)
                     self.__add_to_list_of_inferences(new_inference)
         
         if len(self.list_of_inferences) != current_len_of_types:
@@ -145,7 +146,7 @@ class Skywalker(object):
         all_inferences = []
         for inference in self.list_of_inferences:
             if inference.inference_fullname == call.full_name_from and inference.variable_name == call.variable_from:
-                all_inferences.append(inference.variable_type)
+                all_inferences.append(inference)
         return all_inferences
 
     def __add_to_list_of_inferences(self,new_inference):
@@ -167,8 +168,9 @@ class Skywalker(object):
         function_name = self.__find_current_function_name(definition)
         variable_name = definition.name
         variable_type = inference.name
+        inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
 
-        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type)
+        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
 
         return inference
     

@@ -6,5 +6,6 @@ class A:
     def f(self):
         x = Foo()
         b = B()
-        b.g(x,self)
+        testeinteiro = 2
+        b.g(x,self, testeinteiro)
 
