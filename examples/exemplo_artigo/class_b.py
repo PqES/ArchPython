@@ -7,4 +7,6 @@ class B:
         c = C()
         c.h(x)
         c.h(z)
+        d = c.t()
+
 

@@ -4,6 +4,7 @@ from class_b import B
 class A:
 
     def f(self):
+        
         x = Foo()
         b = B()
         testeinteiro = 2

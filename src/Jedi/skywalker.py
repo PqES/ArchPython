@@ -5,6 +5,7 @@ from Jedi.read_py_files import ReadPyFiles
 from Enums.jedi_error_enum import JediErrorEnum
 from Models.inference import Inference
 from Models.call import Call
+from Models.type_declaration import TypeDeclaration
 
 #TODO mudar o nome dessa classe
 class Skywalker(object):
@@ -15,6 +16,8 @@ class Skywalker(object):
         self.inferences = {}
         self.list_of_inferences = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
+
+        self.__type_declarations = []
     
     def run_jedi(self):
         #Lê os arquivos
@@ -31,13 +34,26 @@ class Skywalker(object):
 
         #escreve as inferências de uma maneira mais detalhada
         self.__write_list_of_detailed_inferences()
+
+        self.__write_types_declared()
+    
+    def get_type_declarations(self):
+        return self.__type_declarations
+    
+    def __write_types_declared(self):
+        json_content = []
+        for type_declared in self.__type_declarations:
+            json_content.append(type_declared.get_json_representation())
+        
+        with open('./results/types_declared.json', 'w') as output:
+            json.dump(json_content, output)
     
     def __write_list_of_inferences(self):
         json_content = []
         for inference in self.list_of_inferences:
             json_content.append(list(inference.get_tuple_representation()))
         
-        with open('./results/inferences.json', 'w') as output:
+        with open('./results/simple_inferences.json', 'w') as output:
             json.dump(json_content, output)
         
     def __write_list_of_detailed_inferences(self):
@@ -65,6 +81,8 @@ class Skywalker(object):
             raise Exception(JediErrorEnum.NO_FILES_FOUND.value)
 
         for file_path  in self.files:
+            
+            type_declaration = TypeDeclaration(file_path)
             script_names = jedi.Script(path=file_path).get_names(all_scopes=True, definitions=True, references=True)
 
             should_verify_params = False
@@ -73,6 +91,9 @@ class Skywalker(object):
             current_goto_params_names = []
 
             for definition in script_names:
+
+                if (self.__is_a_new_type_declared(definition, file_path)):
+                    type_declaration.add_type_declared(definition.name)
 
                 if should_verify_params and current_definition and current_goto:
                     if definition._name.tree_name.parent.type == "arglist" or definition._name.tree_name.parent.type == "trailer":
@@ -117,12 +138,34 @@ class Skywalker(object):
                         #Esse cara vai ignorar o caso no qual é a instanciação de uma classe
                         # Exemplo: Classe()
                         if (inference.name == definition.name):
+                            if (self.__check_if_return_exists_inline(file_path, definition.line)):
+                                inference_object = self.__create_inference_from_return(definition, inference)
+                                self.__add_to_list_of_inferences(inference_object)
                             continue
+
+                            
                         
                         inference_object = self.__create_inference(definition, inference)
                         self.__add_to_list_of_inferences(inference_object)
+                
+            self.__type_declarations.append(type_declaration)
 
         print("End of base step")
+    
+    def __is_a_new_type_declared(self, definition, current_file_path):
+        if definition.type == "class":
+            definitions_goto = definition.goto(follow_imports=True, follow_builtin_imports=True)
+            for goto in definitions_goto:
+                if goto.module_path == current_file_path:
+                    return True
+        return False
+    
+    def __check_if_return_exists_inline(self, file_path, line_no):
+        with open(file_path) as file:
+            lines = file.readlines()
+            return "return" in str(lines[line_no - 1])
+
+
 
     def __recursive_step(self, current_len_of_types):
 
@@ -160,6 +203,19 @@ class Skywalker(object):
         variable_name = definition.name
         inference = self.__find_current_class_name(definition)
         return (file_class_function_key, variable_name, inference)
+    
+    def __create_inference_from_return(self, definition, inference):
+        file_path = definition.module_path
+        file_name = definition.module_path.split("/")[-1].replace('.py', '')
+        class_name = self.__find_current_class_name(definition)
+        function_name = self.__find_current_function_name(definition)
+        variable_name = "function_return"
+        variable_type = inference.name
+        inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
+
+        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
+
+        return inference
     
     def __create_inference(self, definition, inference):
         file_path = definition.module_path

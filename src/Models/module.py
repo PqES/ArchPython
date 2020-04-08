@@ -9,11 +9,21 @@ class Module:
         self.forbidden = forbidden
         self.required = required
 
+        self.__types_declared = set()
         self.__types_used = set()
         self.__problems = []
 
-    def add_used_type(self, type):
-        self.__types_used.add(type)
+    def add_used_type(self, new_type):
+        self.__types_used.add(new_type)
+    
+    def add_type_declared(self, new_type):
+        if type(new_type) == set:
+            self.__types_declared = self.__types_declared.union(new_type)
+        else:
+            self.__types_declared.add(new_type)
+    
+    def get_types_declared(self):
+        return self.__types_declared
     
     def add_types_used_set(self, used_set):
         self.__types_used = self.__types_used.union(used_set)

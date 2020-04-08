@@ -4,9 +4,12 @@ from Enums.problems_enum import ProblemsEnum
 
 class ConformityChecker:
 
-    def __init__(self, module_definitions, inferences):
+    def __init__(self, module_definitions, inferences, types_declared):
         self.module_definitions = module_definitions
         self.inferences = inferences
+        self.types_declared = types_declared
+
+        self.__assign_types_to_modules()
         
         self.__file_types_cache = {}
         self.__problems = []
@@ -27,6 +30,12 @@ class ConformityChecker:
         self.__write_problems()
 
         pass
+
+    def __assign_types_to_modules(self):
+        for type_declaration in self.types_declared:
+            for module in self.module_definitions:
+                if type_declaration.file_path in module.files:
+                    module.add_type_declared(type_declaration.types_declared)
 
 
     # Cria um dicionário do tipo <caminho_arquivo> -> <conjunto de tipos>

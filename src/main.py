@@ -6,7 +6,7 @@ import json
 from Utils.input_reader import InputReader
 from Utils.module_definition_loader import ModuleDefinitionLoader
 from Jedi.skywalker import Skywalker
-from Utils.conformity_checker import ConformityChecker
+from Commons.conformity_checker import ConformityChecker
 from Utils.vis_graph_creator_util import VisGraphCreatorUtil
 from Commons.graphs_creators.module_graph_creator import ModuleGraphCreator
 from Commons.graphs_creators.inference_graph_creator import InferenceGraphCreator
@@ -42,14 +42,16 @@ def read_project_folder(target_project_root_path):
 
     inferences = skywalker.get_inferences()
 
+    types_defined = skywalker.get_type_declarations()
+
     graph = InferenceGraphCreator(inferences).create_graph_from_inference()
     VisGraphCreatorUtil.create_vis_graph(graph)
 
-    return inferences
+    return [inferences, types_defined]
 
 #Função que cruza as informações do modulo com as inferencias realizadas
-def cross_information(module_definitions, inferences):
-    cc = ConformityChecker(module_definitions, inferences)
+def cross_information(module_definitions, inferences, types_declared):
+    cc = ConformityChecker(module_definitions, inferences, types_declared)
     cc.check_conformity()
     pass
 
@@ -73,10 +75,9 @@ if __name__ == "__main__":
     target_project_root_path = sys.argv[2]
     
     module_definitions = read_module_definition_file(module_definition_file)
-    inferences = read_project_folder(target_project_root_path)
+    inferences, types_declared = read_project_folder(target_project_root_path)
     # write_files(files)
-    # cross_information(module_definitions, inferences)
-    
+    cross_information(module_definitions, inferences, types_declared)    
     
 
     # print(project_folder)

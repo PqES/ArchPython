@@ -5,3 +5,6 @@ class C:
     def h(self, y):
         d = D()
         d.m(y)
+    
+    def t(self):
+        return D()
