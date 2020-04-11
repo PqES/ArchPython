@@ -14,6 +14,7 @@ class ConformityChecker:
         self.__file_types_cache = {}
         self.__inference_cache = {}
         self.__files_used_cache = {}
+        self.__module_cache = {}
         self.__problems = []
     
     def check_conformity(self):
@@ -33,6 +34,8 @@ class ConformityChecker:
         #Atribui a cada modulo todos os tipos que estão sendo usados dentro dele
         self.__assign_types_used()
 
+        self.__create_module_by_name_cache()
+
         #Verificar conformidade
         self.__check_conformity()
 
@@ -41,6 +44,11 @@ class ConformityChecker:
         self.__write_problems()
 
         pass
+
+    
+    def __create_module_by_name_cache(self):
+        for module in self.module_definitions:
+            self.__module_cache[module.name] = module
 
     def __create_inference_cache(self):
         inference_cache = {}
@@ -110,39 +118,71 @@ class ConformityChecker:
     def __check_allowed(self, module):
         allowed_set = module.get_allowed_as_set()
         required_set = module.get_required_as_set()
-        used_set = module.get_types_used()
 
-        all_allowed_types = allowed_set.union(required_set)
+        allowed_and_required_set = allowed_set.union(required_set)
 
-        if all_allowed_types != used_set:
-            not_allowed_types = used_set.difference(all_allowed_types)
-            problem = Problem(ProblemsEnum.ALLOWED_RESTRICTION_BROKEN.value, module, not_allowed_types)
+        allowed_and_required_files_per_module = self.__restriction_files_per_module(allowed_and_required_set)
+
+        used_files_path = module.get_used_files_path()
+        used_modules = module.get_types_used()
+
+
+        for allowed_and_required_module in allowed_and_required_files_per_module.keys():
+            allowed_and_required = set(allowed_and_required_files_per_module[allowed_and_required_module])
+            if len(allowed_and_required.difference(used_files_path)) == 0:
+                used_modules.remove(allowed_and_required_module)
+        
+        if len(used_modules) > 0:
+            problem = Problem(ProblemsEnum.ALLOWED_RESTRICTION_BROKEN.value, module, used_modules, True)
             self.__report_problem(problem, module)
 
+
+            
+
     def __check_forbidden(self, module):
-        used_set = module.get_types_used()
         forbidden_set = module.get_forbidden_as_set()
 
-        forbidden_types_being_used = used_set.intersection(forbidden_set)
+        forbidden_files_per_module = self.__restriction_files_per_module(forbidden_set)
+        used_files_path = module.get_used_files_path()
 
-        if len(forbidden_types_being_used) != 0:
-            problem = Problem(ProblemsEnum.FORBIDDEN_RESTRICTION_BROKEN.value, module, forbidden_types_being_used)
+        forbidden_modules_used = set()
+
+        for forbidden_module in forbidden_files_per_module.keys():
+            forbidden_set = set(forbidden_files_per_module[forbidden_module])
+            if (len(forbidden_set.intersection(used_files_path)) > 0):
+                forbidden_modules_used.add(forbidden_module)
+
+        if len(forbidden_modules_used) > 0 :
+            problem = Problem(ProblemsEnum.FORBIDDEN_RESTRICTION_BROKEN.value, module, forbidden_modules_used)
             self.__report_problem(problem, module)
 
     
     def __check_required(self, module):
         required_set = module.get_required_as_set()
-        used_set = module.get_types_used()
 
-        required_and_used_set = required_set.intersection(used_set)
+        required_files_per_module = self.__restriction_files_per_module(required_set)
+        used_files_path = module.get_used_files_path()
+        
+        modules_used = set()
 
-        # Se essa intersecção acontecer, significa que todos que são
-        # requeridos então de fato sendo usados. Logo, ele passa nesse
-        # check
-        if required_and_used_set != required_set:
-            required_not_used = required_set.difference(required_and_used_set)
+        for required_file in required_files_per_module.keys():
+            requires_set = set(required_files_per_module[required_file])
+            if (len(requires_set.intersection(used_files_path)) > 0):
+                modules_used.add(required_file)
+
+
+        if modules_used != required_set:
+            required_not_used = required_set.difference(modules_used)
             problem = Problem(ProblemsEnum.REQUIRED_RESTRICTION_BROKEN.value, module, required_not_used)
             self.__report_problem(problem, module)
+
+    
+    def __restriction_files_per_module(self, restriction_set): 
+        restriction_files_per_module = {}
+        for module_restriction in restriction_set:
+            restriction_files_per_module[module_restriction] = self.__module_cache[module_restriction].files
+        return restriction_files_per_module
+    
     
     def __report_problem(self, problem, module):
         self.__problems.append(problem)

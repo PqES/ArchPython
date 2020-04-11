@@ -1,5 +1,6 @@
 from class_foo import Foo
-from class_b import B, OutroTipo
+from class_b import B
+from class_d import D
 import os
 
 class A:
@@ -7,6 +8,7 @@ class A:
         caminho_atual = os.getcwd()
         x = Foo()
         b = B()
+        d = D()
         testeinteiro = 2
         b.g(x,self, testeinteiro)
 

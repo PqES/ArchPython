@@ -9,7 +9,7 @@ class ProblemsEnum(Enum):
 
     ALLOWED_RESTRICTION_BROKEN = {
         "Code" : "ALLOWED_RESTRICTION_BROKEN",
-        "Message" : "An unallowed restriction was used"
+        "Message" : "A restriction not explicitly allowed and not explicitly required was used"
     }
 
     REQUIRED_RESTRICTION_BROKEN = {

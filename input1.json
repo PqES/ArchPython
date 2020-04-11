@@ -19,7 +19,7 @@
         "files" : [
             "./examples/exemplo_artigo/class_c.py"
         ],
-        "forbidden" : ["Foo"],
+        "forbidden" : ["A"],
         "required" : [
             "A", "B"
         ]
