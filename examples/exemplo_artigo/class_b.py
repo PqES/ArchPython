@@ -9,4 +9,6 @@ class B:
         c.h(z)
         d = c.t()
 
+class OutroTipo:
+    pass
 

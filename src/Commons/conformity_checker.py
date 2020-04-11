@@ -12,12 +12,23 @@ class ConformityChecker:
         self.__assign_types_to_modules()
         
         self.__file_types_cache = {}
+        self.__inference_cache = {}
+        self.__files_used_cache = {}
         self.__problems = []
     
     def check_conformity(self):
         
         # Cria um dicionário do tipo <caminho_arquivo> -> <conjunto de tipos>
         self.__create_file_types_cache()
+
+        # Cria um dicionário do tipo <caminho_do_arquivo> -> <conjunto de inferencias>
+        self.__create_inference_cache()
+
+        # Cria um dicionário do tipo <caminho do arquivo> -> <conjuntos de arquivo utilizado>
+        self.__create_files_used_cache()
+
+        # Atribui a cada modulo os arquivos que ele está utilizando
+        self.__assign_files_used()
         
         #Atribui a cada modulo todos os tipos que estão sendo usados dentro dele
         self.__assign_types_used()
@@ -30,6 +41,27 @@ class ConformityChecker:
         self.__write_problems()
 
         pass
+
+    def __create_inference_cache(self):
+        inference_cache = {}
+        for inference in self.inferences:
+            if not inference.file_path in inference_cache.keys():
+                inference_cache[inference.file_path] = set()
+            inference_cache[inference.file_path].add(inference)
+        self.__inference_cache = inference_cache
+
+    def __create_files_used_cache(self):
+        files_used_cache = {}
+        for module in self.module_definitions:
+            for file in module.files:
+                if not file in files_used_cache.keys():
+                    files_used_cache[file] = set()
+                inferences = self.__inference_cache[file]
+                if inferences != None:
+                    for inference in inferences:
+                        files_used_cache[file].add(inference.inference_variable_path)
+        self.__files_used_cache = files_used_cache
+
 
     def __assign_types_to_modules(self):
         for type_declaration in self.types_declared:
@@ -50,10 +82,17 @@ class ConformityChecker:
         self.__file_types_cache = file_types_cache
 
     # Atribui a cada modulo todos os tipos que estão sendo usados dentro dele
-    def __assign_types_used(self, ):
+    def __assign_types_used(self):
         for module in self.module_definitions:
             for file_path in module.files:
                 module.add_types_used_set(self.__file_types_cache[file_path])
+    
+    #Atribui a cada modulo todos os arquivos que estão sendo utilizados por ele
+    def __assign_files_used(self):
+        for module in self.module_definitions:
+            for file_path in module.files:
+                module.assign_types_used_file_path(self.__files_used_cache[file_path])
+
     
     # Checa de fato a conformidade da arquitetura
     def __check_conformity(self):

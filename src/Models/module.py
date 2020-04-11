@@ -9,9 +9,15 @@ class Module:
         self.forbidden = forbidden
         self.required = required
 
+        self.allowed_file_paths = None
+        self.forbidden_file_paths = None
+        self.required_file_file_paths = None
+
         self.__types_declared = set()
         self.__types_used = set()
+        self.__types_used_file_path = set()
         self.__problems = []
+
 
     def add_used_type(self, new_type):
         self.__types_used.add(new_type)
@@ -21,6 +27,9 @@ class Module:
             self.__types_declared = self.__types_declared.union(new_type)
         else:
             self.__types_declared.add(new_type)
+    
+    def assign_types_used_file_path(self, files_used_set):
+        self.__types_used_file_path = self.__types_used_file_path.union(files_used_set)
     
     def get_types_declared(self):
         return self.__types_declared

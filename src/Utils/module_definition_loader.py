@@ -19,7 +19,45 @@ class ModuleDefinitionLoader(object):
 
             module = ModuleDefinitionLoader.__create_module(file_content, module)
             module_definitions.append(module)
+        module_definitions = ModuleDefinitionLoader.__assign_restriction_files(module_definitions)
         return module_definitions
+    
+    @staticmethod
+    def __assign_restriction_files(module_definitions):
+        modified_modules = []
+
+        module_cache = ModuleDefinitionLoader.__create_module_by_name_cache(module_definitions)
+
+        for module in module_definitions:
+            if module.allowed != None:
+                module.allowed_file_paths = ModuleDefinitionLoader.__get_set_of_paths_from_module(module.allowed, module_cache)
+            
+            if module.forbidden != None:
+                module.forbidden_file_paths = ModuleDefinitionLoader.__get_set_of_paths_from_module(module.forbidden, module_cache)
+            
+            if module.required != None:
+                module.required_file_file_paths = ModuleDefinitionLoader.__get_set_of_paths_from_module(module.required, module_cache)
+            
+            modified_modules.append(module)
+            
+        return modified_modules
+
+    @staticmethod
+    def __get_set_of_paths_from_module(list_of_modules, module_cache):
+        set_of_paths = set()
+        for module in list_of_modules:
+            module_searched = module_cache[module]
+            for path in module_searched.files:
+                set_of_paths.add(path)
+        return set_of_paths
+    
+    @staticmethod
+    def __create_module_by_name_cache(module_definitions):
+        cache = {}
+        for module in module_definitions:
+            cache[module.name] = module
+        return cache
+
 
     @staticmethod
     def __try_get_value_from_module(file_content, module, key):
