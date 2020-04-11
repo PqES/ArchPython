@@ -43,7 +43,9 @@ class ConformityChecker:
 
         self.__write_problems()
 
-        pass
+    
+    def get_problems(self):
+        return self.__problems
 
     
     def __create_module_by_name_cache(self):

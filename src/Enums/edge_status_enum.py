@@ -16,3 +16,14 @@ class EdgeStatusEnum(Enum):
         "Code" : "Required",
         "Color" : "blue"
     }
+
+    ERROR_RESTRICTION = {
+        "Code" : "Error Restriction",
+        "Color" : "red"
+    }
+
+    WARNING_RESTRICTION = {
+        "Code" : "Error Restriction",
+        "Color" : "#bad10a"
+    }
+

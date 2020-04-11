@@ -16,6 +16,8 @@ class Skywalker(object):
         self.inferences = {}
         self.list_of_inferences = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
+        
+        self.file_modules_cache = {} #Cache com os dados arquivo -> Modulo que ele pertence
 
         self.__type_declarations = []
     
@@ -39,6 +41,11 @@ class Skywalker(object):
     
     def get_type_declarations(self):
         return self.__type_declarations
+    
+    def set_modules(self, modules):
+        for module in modules:
+            for file in module.files:
+                self.file_modules_cache[file] = module.name
     
     def __write_types_declared(self):
         json_content = []
@@ -177,6 +184,14 @@ class Skywalker(object):
                 for infered_type in infered_types:
                     # inference_path = infered_type.module_path if not infered_type.in_builtin_module() else infered_type.full_name
                     new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type.variable_type, infered_type.inference_variable_path)
+                    new_inference.set_origin_module(self.file_modules_cache[call.file_path_to])
+
+                    inferred_module_name = ""
+                    if "builtins" in infered_type.inference_variable_path:
+                        inferred_module_name = infered_type.inference_variable_path
+                    else:
+                        inferred_module_name = self.file_modules_cache[infered_type.inference_variable_path]
+                    new_inference.set_inferred_module_name(inferred_module_name)
                     self.__add_to_list_of_inferences(new_inference)
         
         if len(self.list_of_inferences) != current_len_of_types:
@@ -215,6 +230,13 @@ class Skywalker(object):
 
         inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
 
+        inference.set_origin_module(self.file_modules_cache[file_path])
+
+        if "builtins" in inference_path:
+            inference.set_inferred_module_name(inference_path)
+        else:
+            inference.set_inferred_module_name(self.file_modules_cache[inference_path])
+
         return inference
     
     def __create_inference(self, definition, inference):
@@ -228,7 +250,15 @@ class Skywalker(object):
 
         inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
 
+        inference.set_origin_module(self.file_modules_cache[file_path])
+
+        if "builtins" in inference_path:
+            inference.set_inferred_module_name(inference_path)
+        else:
+            inference.set_inferred_module_name(self.file_modules_cache[inference_path])
+
         return inference
+    
     
     def __should_ignore_definition(self, inference):
         if inference.name == "__init__":

@@ -10,6 +10,7 @@ from Commons.conformity_checker import ConformityChecker
 from Utils.vis_graph_creator_util import VisGraphCreatorUtil
 from Commons.graphs_creators.module_graph_creator import ModuleGraphCreator
 from Commons.graphs_creators.inference_graph_creator import InferenceGraphCreator
+from Commons.graphs_creators.problem_graph_creator import ProblemGraphCreator
 
 
 
@@ -36,8 +37,9 @@ def read_module_definition_file(module_definition_json_path):
 
 #TODO Remover essa função deste arquivo
 #TODO Renomear essa função
-def read_project_folder(target_project_root_path):
+def read_project_folder(target_project_root_path, module_definitions):
     skywalker = Skywalker(target_project_root_path)
+    skywalker.set_modules(module_definitions)
     skywalker.run_jedi()
 
     inferences = skywalker.get_inferences()
@@ -53,6 +55,11 @@ def read_project_folder(target_project_root_path):
 def cross_information(module_definitions, inferences, types_declared):
     cc = ConformityChecker(module_definitions, inferences, types_declared)
     cc.check_conformity()
+
+    problems = cc.get_problems()
+
+    graph = ProblemGraphCreator(inferences, problems).create_graph_from_problems()
+    VisGraphCreatorUtil.create_vis_graph(graph)
     pass
 
 def write_files(files):
@@ -75,7 +82,7 @@ if __name__ == "__main__":
     target_project_root_path = sys.argv[2]
     
     module_definitions = read_module_definition_file(module_definition_file)
-    inferences, types_declared = read_project_folder(target_project_root_path)
+    inferences, types_declared = read_project_folder(target_project_root_path, module_definitions)
     # write_files(files)
     cross_information(module_definitions, inferences, types_declared)    
     

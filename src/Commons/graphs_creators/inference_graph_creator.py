@@ -9,6 +9,8 @@ class InferenceGraphCreator:
         self.inferences = inferences
         self.graph = Graph("Inference Graph")
 
+        self.__nodes_cache = {}
+
     
     def create_graph_from_inference(self):
         self.create_nodes()
@@ -16,7 +18,19 @@ class InferenceGraphCreator:
         return self.graph
     
     def create_nodes(self):
-        pass
+        for inference in self.inferences:
+            origin_module = inference.origin_module
+            inferred_module = inference.inferred_module_name
+
+            if not origin_module in self.__nodes_cache.keys():
+                new_node = self.graph.add_node(origin_module)
+                self.__nodes_cache[origin_module] = new_node
+            
+            if not inferred_module in self.__nodes_cache.keys():
+                new_node = self.graph.add_node(inferred_module)
+                self.__nodes_cache[inferred_module] = new_node
     
     def create_edges(self):
-        pass
+        for inference in self.inferences:
+            new_edge = Edge(self.__nodes_cache[inference.origin_module], self.__nodes_cache[inference.inferred_module_name], EdgeStatusEnum.ALLOWED.value)
+            self.graph.add_edge(new_edge)

@@ -4,7 +4,7 @@
             "./examples/exemplo_artigo/class_a.py"
         ],
         "allowed" : [
-            "B", "Foo", "A"
+            "B", "Foo"
         ]
     },
     "B" : {
@@ -12,7 +12,7 @@
             "./examples/exemplo_artigo/class_b.py"
         ],
         "allowed" : [
-            "A", "Foo"
+            "A", "Foo", "C"
         ]
     },
     "C" : {
