@@ -1,0 +1,83 @@
+<html>
+    <body>
+        <table border="1">
+            <thead>
+                <tr id="header">
+                </tr>
+            </thead>
+            <tbody id="body">
+            </tbody>
+        </table>
+    </body>
+</html>
+
+<script>
+    // var allFiles = ["", "file1", "file2", "file3"]
+    var allFiles = REPLACE_ALL_FILES
+
+
+    // var files = [
+    //     {
+    //         "from" : "file1",
+    //         "to": "file2",
+    //         "color" : "green"
+    //     }, 
+    //     {
+    //         "from" : "file3",
+    //         "to": "file1",
+    //         "color" : "red"
+    //     }
+    // ]
+    var relationships = REPLACE_RELATIONSHIPS
+
+
+    var header = document.getElementById("header")
+
+    allFiles.forEach(file => {
+        var th = document.createElement("th")
+        var thText = document.createTextNode(file)
+        th.appendChild(thText)
+        header.appendChild(th)
+    });
+
+    var tableBody = document.getElementById("body")
+    allFiles.forEach(file => {
+        if (file === "") {
+            return
+        }
+
+        var newRow = document.createElement("tr")
+
+        var rowHeader = document.createElement("th")
+        var rowHeaderText = document.createTextNode(file)
+
+        rowHeader.appendChild(rowHeaderText)
+
+        newRow.appendChild(rowHeader)
+
+        allFiles.forEach(childFile => {
+            if (childFile === "") {
+                return
+            }
+
+            var child = document.createElement("td")
+            
+
+            combination = relationships.filter(f => f['from'] == file && f['to'] == childFile)
+
+            if (combination.length > 0) {
+                child.style.backgroundColor = combination[0]["color"]
+            } else {
+                child.style.backgroundColor = "white"
+            }
+
+            newRow.appendChild(child)
+
+        });
+
+        tableBody.appendChild(newRow)
+
+
+    });
+
+</script>
