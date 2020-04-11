@@ -19,9 +19,9 @@
         "files" : [
             "./examples/exemplo_artigo/class_c.py"
         ],
-        "forbidden" : ["A"],
+        "forbidden" : ["B"],
         "required" : [
-            "A", "B"
+            "A"
         ]
     },
     "D" : {

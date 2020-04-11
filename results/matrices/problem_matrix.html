@@ -1,0 +1,69 @@
+<html>
+    <body>
+        <table border="1" width="100%" height="100%">
+            <thead>
+                <tr id="header">
+                </tr>
+            </thead>
+            <tbody id="body">
+            </tbody>
+        </table>
+    </body>
+</html>
+
+<script>
+    var allFiles = ['', 'A', 'C', 'D', 'B', 'Foo']
+
+    var relationships = [{'from': 'A', 'to': 'D', 'color': 'yellow'}, {'from': 'A', 'to': 'str', 'color': 'yellow'}, {'from': 'A', 'to': 'int', 'color': 'yellow'}, {'from': 'A', 'to': 'A', 'color': 'yellow'}, {'from': 'A', 'to': 'C', 'color': 'white'}, {'from': 'A', 'to': 'D', 'color': 'yellow'}, {'from': 'A', 'to': 'str', 'color': 'yellow'}, {'from': 'A', 'to': 'int', 'color': 'yellow'}, {'from': 'A', 'to': 'A', 'color': 'yellow'}, {'from': 'A', 'to': 'B', 'color': 'green'}, {'from': 'A', 'to': 'Foo', 'color': 'green'}, {'from': 'C', 'to': 'A', 'color': 'green'}, {'from': 'C', 'to': 'C', 'color': 'white'}, {'from': 'C', 'to': 'D', 'color': 'green'}, {'from': 'C', 'to': 'B', 'color': 'white'}, {'from': 'C', 'to': 'Foo', 'color': 'green'}, {'from': 'D', 'to': 'A', 'color': 'green'}, {'from': 'D', 'to': 'C', 'color': 'white'}, {'from': 'D', 'to': 'D', 'color': 'white'}, {'from': 'D', 'to': 'B', 'color': 'white'}, {'from': 'D', 'to': 'Foo', 'color': 'red'}, {'from': 'B', 'to': 'A', 'color': 'green'}, {'from': 'B', 'to': 'C', 'color': 'green'}, {'from': 'B', 'to': 'D', 'color': 'yellow'}, {'from': 'B', 'to': 'int', 'color': 'yellow'}, {'from': 'B', 'to': 'B', 'color': 'white'}, {'from': 'B', 'to': 'Foo', 'color': 'green'}, {'from': 'Foo', 'to': 'A', 'color': 'white'}, {'from': 'Foo', 'to': 'C', 'color': 'white'}, {'from': 'Foo', 'to': 'D', 'color': 'white'}, {'from': 'Foo', 'to': 'B', 'color': 'white'}, {'from': 'Foo', 'to': 'Foo', 'color': 'green'}]
+
+
+    var header = document.getElementById("header")
+
+    allFiles.forEach(file => {
+        var th = document.createElement("th")
+        var thText = document.createTextNode(file)
+        th.appendChild(thText)
+        header.appendChild(th)
+    });
+
+    var tableBody = document.getElementById("body")
+    allFiles.forEach(file => {
+        if (file === "") {
+            return
+        }
+
+        var newRow = document.createElement("tr")
+
+        var rowHeader = document.createElement("th")
+        var rowHeaderText = document.createTextNode(file)
+
+        rowHeader.appendChild(rowHeaderText)
+
+        newRow.appendChild(rowHeader)
+
+        allFiles.forEach(childFile => {
+            if (childFile === "") {
+                return
+            }
+
+            var child = document.createElement("td")
+            
+
+            combination = relationships.filter(f => f['from'] == file && f['to'] == childFile)
+
+            if (combination.length > 0) {
+                child.style.backgroundColor = combination[0]["color"]
+            } else {
+                child.style.backgroundColor = "white"
+            }
+
+            newRow.appendChild(child)
+
+        });
+
+        tableBody.appendChild(newRow)
+
+
+    });
+
+</script>
