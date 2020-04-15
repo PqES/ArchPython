@@ -1,0 +1,13 @@
+{
+    "Gerente" : {
+        "files" : [
+            "./examples/ExemploPessoa/gerente.py"
+        ]
+    },
+    "Pessoa" : {
+        "files" : [
+            "./examples/ExemploPessoa/pessoa.py"
+        ]
+    }
+    
+}

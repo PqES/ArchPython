@@ -97,7 +97,13 @@ class Skywalker(object):
             current_goto = None
             current_goto_params_names = []
 
-            for definition in script_names:
+            for current_index, definition in enumerate(script_names):
+
+                if definition.description == "super":
+                    inherited_class = self.find_inheritance(current_index, script_names)
+                    inference_object = self.__create_inference(definition, inherited_class, True)
+                    self.__add_to_list_of_inferences(inference_object)
+                    continue
 
                 if (self.__is_a_new_type_declared(definition, file_path)):
                     type_declaration.add_type_declared(definition.name)
@@ -133,8 +139,7 @@ class Skywalker(object):
 
                             should_verify_params = True
 
-
-                if not self.__should_ignore_definition(definition):
+                if not self.__should_ignore_definition(definition) :
                     inferences = definition.infer()
 
                     file_name = definition.module_name
@@ -167,6 +172,18 @@ class Skywalker(object):
                     return True
         return False
     
+    def find_inheritance(self, current_definition_index, script_names):
+        for index in range(current_definition_index, len(script_names)):
+            current_definition = script_names[index]
+            if current_definition.description == "__init__":
+                definitions_goto = current_definition.goto(follow_imports=True, follow_builtin_imports=True)
+
+                if (len(definitions_goto) > 0):
+                    for goto in definitions_goto:
+                        #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso 
+                        if goto.type == "function" and goto != current_definition:
+                            return goto
+    
     def __check_if_return_exists_inline(self, file_path, line_no):
         with open(file_path) as file:
             lines = file.readlines()
@@ -193,7 +210,6 @@ class Skywalker(object):
                         inferred_module_name = self.file_modules_cache[infered_type.inference_variable_path]
                     new_inference.set_inferred_module_name(inferred_module_name)
                     self.__add_to_list_of_inferences(new_inference)
-        
         if len(self.list_of_inferences) != current_len_of_types:
             self.__recursive_step(len(self.list_of_inferences))
         
@@ -239,13 +255,13 @@ class Skywalker(object):
 
         return inference
     
-    def __create_inference(self, definition, inference):
+    def __create_inference(self, definition, inference, from_super=False):
         file_path = definition.module_path
         file_name = definition.module_path.split("/")[-1].replace('.py', '')
         class_name = self.__find_current_class_name(definition)
         function_name = self.__find_current_function_name(definition)
         variable_name = definition.name
-        variable_type = inference.name
+        variable_type =  inference.name if not from_super else inference.full_name.split('.')[-2]
         inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
 
         inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
@@ -261,6 +277,8 @@ class Skywalker(object):
     
     
     def __should_ignore_definition(self, inference):
+        if inference.description == "__name__":
+            return True
         if inference.name == "__init__":
             return True
         if inference.type == "statement" or inference.type == "param":
@@ -280,12 +298,20 @@ class Skywalker(object):
     def __find_current_class_name(self, definition):
         if definition.type == "class":
             return definition.name
-        return self.__find_current_class_name(definition.parent())
+        parent = definition.parent()
+        if parent:
+            return self.__find_current_class_name(parent)
+        else: 
+            return "root"
     
     def __find_current_function_name(self, definition):
         if definition.type == "function":
             return definition.name
-        return self.__find_current_function_name(definition.parent())
+        parent = definition.parent()
+        if parent:
+            return self.__find_current_function_name(definition.parent())
+        else: 
+            return "root"
     
     def get_jedi_results(self):
         for index in self.files:
