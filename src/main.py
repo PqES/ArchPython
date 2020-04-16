@@ -12,6 +12,7 @@ from Utils.matrix_creator_util import MatrixCreatorUtil
 from Commons.graphs_creators.module_graph_creator import ModuleGraphCreator
 from Commons.graphs_creators.inference_graph_creator import InferenceGraphCreator
 from Commons.graphs_creators.problem_graph_creator import ProblemGraphCreator
+from Commons.graphs_creators.reflection_graph_creator import ReflectionGraphCreator
 from Commons.problem_matrix_creator import ProblemMatrixCreator
 
 
@@ -65,7 +66,9 @@ def cross_information(module_definitions, inferences, types_declared):
 
     matrix = ProblemMatrixCreator(inferences, problems).create_matrix()
     MatrixCreatorUtil.create_matrix_file(matrix)
-    # Criar um util pra escrever matrix
+
+    refletion_matrix = ReflectionGraphCreator(inferences, problems, module_definitions).create_graph()
+    VisGraphCreatorUtil.create_vis_graph(refletion_matrix)
     pass
 
 def write_files(files):

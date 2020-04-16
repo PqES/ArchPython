@@ -4,7 +4,7 @@
             "./examples/exemplo_artigo/class_a.py"
         ],
         "allowed" : [
-            "B", "Foo"
+            "B"
         ]
     },
     "B" : {

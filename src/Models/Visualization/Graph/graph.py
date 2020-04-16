@@ -21,6 +21,19 @@ class Graph:
         self.__current_node_id += 1
         return new_node
     
+    def edge_exists(self, node_origin, node_destination):
+        for edge in self.edges:
+            if edge.node_origin.name == node_origin and edge.node_destination.name == node_destination:
+                return edge
+        return None
+    
+    def replace_edge(self, old_edge, new_edge):
+        for index, edge in enumerate(self.edges):
+            if edge.node_origin.name == old_edge.node_origin.name and edge.node_destination.name == old_edge.node_destination.name:
+                self.edges[index] = new_edge
+                return
+
+
     def add_edge(self, edge):
         #TODO: checar se os nós já existem no grafo
         if edge.node_origin.name in self.__nodes_name_cache and edge.node_destination.name in self.__nodes_name_cache:
