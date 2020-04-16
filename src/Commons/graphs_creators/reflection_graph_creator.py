@@ -28,7 +28,7 @@ class ReflectionGraphCreator:
         self.draw_allowed_dependencies() #Black normal
         # self.draw_forbidden_or_not_explicity_forbidden() #Laranja dashed
         # self.draw_absences() #Dotted red - requerido e não usado
-        # self.draw_allowed_not_used() #Gray Normal
+        self.draw_allowed_not_used() #Gray Normal
     
     def draw_allowed_dependencies(self):
         for module in self.module_definitions:
@@ -44,6 +44,23 @@ class ReflectionGraphCreator:
 
                         new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value)
                         self.graph.replace_edge(old_edge, new_edge)
+    
+    def draw_allowed_not_used(self):
+        for module in self.module_definitions:
+            if module.allowed != None:
+                for module_allowed in module.allowed:
+                    origin_module = module.name
+
+                    old_edge = self.graph.edge_exists(origin_module, module_allowed)
+
+                    if old_edge == None:
+                        origin_node = self.__nodes_cache[origin_module] 
+                        final_node = self.__nodes_cache[module_allowed]
+
+                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED_NOT_USED.value)
+                        self.graph.add_edge(new_edge)
+
+                        # self.graph.replace_edge(old_edge, new_edge)
 
     def create_nodes(self):
         for inference in self.inferences:

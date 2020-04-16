@@ -23,7 +23,7 @@ class EdgeStatusEnum(Enum):
 
     ALLOWED_NOT_USED = {
         "Code" : "AllowedNotUsed",
-        "Color" : "gray",
+        "Color" : "#bfbfbf",
         "Dashes": False
     }
 
