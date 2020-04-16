@@ -224,9 +224,13 @@ class Skywalker(object):
         return all_inferences
 
     def __add_to_list_of_inferences(self,new_inference):
+        if "builtins" in new_inference.inferred_module_name:
+            return
+
         for inference in self.list_of_inferences:
             if new_inference.get_key() == inference.get_key():
                 return
+        
         self.list_of_inferences.append(new_inference)
 
     def __create_tuple_from_self(self, definition):

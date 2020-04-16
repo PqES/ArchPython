@@ -32,5 +32,12 @@ class InferenceGraphCreator:
     
     def create_edges(self):
         for inference in self.inferences:
-            new_edge = Edge(self.__nodes_cache[inference.origin_module], self.__nodes_cache[inference.inferred_module_name], EdgeStatusEnum.ALLOWED.value)
+
+            origin_node = self.__nodes_cache[inference.origin_module] 
+            final_node = self.__nodes_cache[inference.inferred_module_name]
+
+            if origin_node.name == final_node.name:
+                continue
+
+            new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value)
             self.graph.add_edge(new_edge)

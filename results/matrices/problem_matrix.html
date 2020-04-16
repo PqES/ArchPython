@@ -12,9 +12,9 @@
 </html>
 
 <script>
-    var allFiles = ['', 'Gerente', 'Pessoa']
+    var allFiles = ['', 'B', 'D', 'Foo', 'A', 'C']
 
-    var relationships = [{'from': 'Gerente', 'to': 'Gerente', 'color': 'green'}, {'from': 'Gerente', 'to': 'Pessoa', 'color': 'green'}, {'from': 'Pessoa', 'to': 'Gerente', 'color': 'green'}, {'from': 'Pessoa', 'to': 'Pessoa', 'color': 'green'}]
+    var relationships = [{'from': 'B', 'to': 'B', 'color': 'white'}, {'from': 'B', 'to': 'D', 'color': 'yellow'}, {'from': 'B', 'to': 'Foo', 'color': 'green'}, {'from': 'B', 'to': 'A', 'color': 'green'}, {'from': 'B', 'to': 'C', 'color': 'green'}, {'from': 'D', 'to': 'B', 'color': 'white'}, {'from': 'D', 'to': 'D', 'color': 'white'}, {'from': 'D', 'to': 'Foo', 'color': 'red'}, {'from': 'D', 'to': 'A', 'color': 'green'}, {'from': 'D', 'to': 'C', 'color': 'white'}, {'from': 'Foo', 'to': 'B', 'color': 'white'}, {'from': 'Foo', 'to': 'D', 'color': 'white'}, {'from': 'Foo', 'to': 'Foo', 'color': 'green'}, {'from': 'Foo', 'to': 'A', 'color': 'white'}, {'from': 'Foo', 'to': 'C', 'color': 'white'}, {'from': 'A', 'to': 'B', 'color': 'green'}, {'from': 'A', 'to': 'D', 'color': 'yellow'}, {'from': 'A', 'to': 'A', 'color': 'yellow'}, {'from': 'A', 'to': 'Foo', 'color': 'green'}, {'from': 'A', 'to': 'D', 'color': 'yellow'}, {'from': 'A', 'to': 'A', 'color': 'yellow'}, {'from': 'A', 'to': 'C', 'color': 'white'}, {'from': 'C', 'to': 'B', 'color': 'white'}, {'from': 'C', 'to': 'D', 'color': 'green'}, {'from': 'C', 'to': 'Foo', 'color': 'green'}, {'from': 'C', 'to': 'A', 'color': 'green'}, {'from': 'C', 'to': 'C', 'color': 'white'}]
 
 
     var header = document.getElementById("header")

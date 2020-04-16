@@ -69,7 +69,8 @@ class ConformityChecker:
                 inferences = self.__inference_cache[file]
                 if inferences != None:
                     for inference in inferences:
-                        files_used_cache[file].add(inference.inference_variable_path)
+                        if not "builtins" in inference.inferred_module_name:
+                            files_used_cache[file].add(inference.inference_variable_path)
         self.__files_used_cache = files_used_cache
 
 

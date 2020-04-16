@@ -48,17 +48,26 @@ class ProblemGraphCreator:
             inferred_module_name = inference.inferred_module_name.replace("builtins.", "")
             tuple_key = (inference.origin_module, inferred_module_name)
             new_edge = None
+            
+            origin_node = self.__nodes_cache[inference.origin_module]
+            destination_node = self.__nodes_cache[inferred_module_name]
+
+            if origin_node.name == destination_node.name:
+                continue
+
             if tuple_key in self.__problems_cache.keys():
                 if self.__problems_cache[tuple_key].category == "problem":
-                    new_edge = Edge(self.__nodes_cache[inference.origin_module], self.__nodes_cache[inferred_module_name], EdgeStatusEnum.ERROR_RESTRICTION.value)
+                    new_edge = Edge(origin_node, destination_node, EdgeStatusEnum.ERROR_RESTRICTION.value)
                 else:
-                    new_edge = Edge(self.__nodes_cache[inference.origin_module], self.__nodes_cache[inferred_module_name], EdgeStatusEnum.WARNING_RESTRICTION.value)
+                    new_edge = Edge(origin_node, destination_node, EdgeStatusEnum.WARNING_RESTRICTION.value)
             else:
-                new_edge = Edge(self.__nodes_cache[inference.origin_module], self.__nodes_cache[inferred_module_name], EdgeStatusEnum.ALLOWED.value)
+                new_edge = Edge(origin_node, destination_node, EdgeStatusEnum.ALLOWED.value)
             self.graph.add_edge(new_edge)
         
         for problem in self.problems:
             if problem.problem_type == ProblemsEnum.REQUIRED_RESTRICTION_BROKEN.value:
                 for destination in problem.restrictions_broken:
+                    if problem.origin_module.name == destination:
+                        continue
                     new_edge = Edge(self.__nodes_cache[problem.origin_module.name], self.__nodes_cache[destination], EdgeStatusEnum.ERROR_RESTRICTION.value)
                     self.graph.add_edge(new_edge)
