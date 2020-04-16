@@ -8,12 +8,11 @@ class EdgeStatusEnum(Enum):
         "Dashes": False
     }
 
-    FORBIDDEN = {
-        "Code" : "Forbidden",
+    FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED = {
+        "Code" : "ForbiddenOrNotExplicityAllowed",
         "Color" : "orange",
         "Dashes": True
     }
-
     
     REQUIRED_NOT_USED = {
         "Code" : "RequiredNotUsed",
@@ -48,6 +47,11 @@ class EdgeStatusEnum(Enum):
     WARNING_RESTRICTION = {
         "Code" : "Error Restriction",
         "Color" : "#bad10a"
+    }
+
+    FORBIDDEN = {
+        "Code" : "forbidden",
+        "Color" : "red"
     }
 
 

@@ -37,7 +37,8 @@ class Graph:
     def add_edge(self, edge):
         #TODO: checar se os nós já existem no grafo
         if edge.node_origin.name in self.__nodes_name_cache and edge.node_destination.name in self.__nodes_name_cache:
-            self.edges.append(edge)
+            if self.edge_exists(edge.node_origin.name, edge.node_destination.name) == None:
+                self.edges.append(edge)
         else: 
             #TODO: Tirar essa string daqui
             raise Exception("Tentando adicionar uma aresta com nós que não existem")
