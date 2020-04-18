@@ -51,7 +51,7 @@ class ReflectionGraphCreator:
     def draw_forbidden_or_not_explicity_forbidden(self):
         edges_not_painted = set(self.graph.edges) - self.edges_modified
         for old_edge in edges_not_painted:
-            new_edge = Edge(old_edge.node_origin, old_edge.node_destination, EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED.value)
+            new_edge = Edge(old_edge.node_origin, old_edge.node_destination, EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED.value, "true")
             self.graph.replace_edge(old_edge, new_edge)
 
     
@@ -67,7 +67,7 @@ class ReflectionGraphCreator:
                         origin_node = self.__nodes_cache[origin_module] 
                         final_node = self.__nodes_cache[module_required]
 
-                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value)
+                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value, "true")
                         self.graph.add_edge(new_edge)
                         self.edges_modified.add(new_edge)
     

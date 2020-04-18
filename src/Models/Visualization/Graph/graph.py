@@ -52,10 +52,19 @@ class Graph:
     def get_edges_in_vis_model(self):
         edges = []
         for edge in self.edges:
-            edges.append({
-                "from": edge.node_origin.idx, 
-                "to": edge.node_destination.idx, 
-                "arrows" : "to",
-                "color": edge.get_color()
-            })
+            if not edge.dashes:
+                edges.append({
+                    "from": edge.node_origin.idx, 
+                    "to": edge.node_destination.idx, 
+                    "arrows" : "to",
+                    "color": edge.get_color()
+                })
+            else:
+                edges.append({
+                    "from": edge.node_origin.idx, 
+                    "to": edge.node_destination.idx, 
+                    "arrows" : "to",
+                    "color": edge.get_color(),
+                    "dashes": edge.dashes
+                })
         return edges
