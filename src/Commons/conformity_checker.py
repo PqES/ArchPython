@@ -66,11 +66,12 @@ class ConformityChecker:
             for file in module.files:
                 if not file in files_used_cache.keys():
                     files_used_cache[file] = set()
-                inferences = self.__inference_cache[file]
-                if inferences != None:
-                    for inference in inferences:
-                        if not "builtins" in inference.inferred_module_name:
-                            files_used_cache[file].add(inference.inference_variable_path)
+                if file in self.__inference_cache.keys():
+                    inferences = self.__inference_cache[file]
+                    if inferences != None:
+                        for inference in inferences:
+                            if not "builtins" in inference.inferred_module_name:
+                                files_used_cache[file].add(inference.inference_variable_path)
         self.__files_used_cache = files_used_cache
 
 
@@ -96,7 +97,8 @@ class ConformityChecker:
     def __assign_types_used(self):
         for module in self.module_definitions:
             for file_path in module.files:
-                module.add_types_used_set(self.__file_types_cache[file_path])
+                if file_path in self.__file_types_cache.keys():
+                    module.add_types_used_set(self.__file_types_cache[file_path])
     
     #Atribui a cada modulo todos os arquivos que estão sendo utilizados por ele
     def __assign_files_used(self):

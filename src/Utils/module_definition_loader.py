@@ -1,5 +1,6 @@
 import sys
 import os
+import glob
 from Models.module import Module
 from Enums.module_definition_error_enum import ModuleDefinitionErrorEnum
 from Enums.module_definition_enum import ModuleDefinitionEnum
@@ -48,7 +49,8 @@ class ModuleDefinitionLoader(object):
         for module in list_of_modules:
             module_searched = module_cache[module]
             for path in module_searched.files:
-                set_of_paths.add(path)
+                paths = set(glob.glob(path))
+                set_of_paths = set_of_paths.union(paths)
         return set_of_paths
     
     @staticmethod
@@ -77,8 +79,11 @@ class ModuleDefinitionLoader(object):
             if file_path[:2] == "./":
                 file_path = file_path[2:]
             complete_path = os.path.join(current_path, file_path)
-            if os.path.isfile(complete_path):
-                complete_paths.append(os.path.join(current_path, file_path))
+            if "*" in complete_path:
+                all_paths = glob.glob(complete_path)
+                complete_paths.extend(all_paths)
+            elif os.path.isfile(complete_path):
+                complete_paths.append(complete_path)
             else :
                 raise Exception(ModuleDefinitionErrorEnum.FILE_DOESNT_EXIST.value + ": " + complete_path)
         return complete_paths

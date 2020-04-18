@@ -4,6 +4,14 @@
             "./examples/exemplo_artigo/class_a.py"
         ],
         "allowed" : [
+            "B", "D", "E"
+        ]
+    },
+    "E" : {
+        "files" : [
+            "./examples/exemplo_artigo/**/*.py"
+        ],
+        "allowed" : [
             "B", "D"
         ]
     },

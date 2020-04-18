@@ -7,7 +7,7 @@ class B:
         c = C()
         c.h(x)
         c.h(z)
-        d = c.t()
+        # d = c.t()
 
 class OutroTipo:
     pass
