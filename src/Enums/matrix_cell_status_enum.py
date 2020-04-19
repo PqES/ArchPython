@@ -2,20 +2,21 @@ from enum import Enum
 
 class MatrixCellStatusEnum(Enum):
 
-    ALLOWED = {
-        "Code" : "Allowed",
-        "Color" : "green"
-    }
-
-    ERROR_RESTRICTION = {
-        "Code" : "Error Restriction",
+    ABSCENCE = {
+        "Code" : "Abscence",
         "Color" : "red"
     }
 
-    WARNING_RESTRICTION = {
-        "Code" : "Error Restriction",
-        "Color" : "yellow"
+    DIVERGENCE = {
+        "Code" : "Divergence",
+        "Color" : "orange"
     }
+
+    WARNING = {
+        "Code" : "Warning",
+        "Color" : "gray"
+    }
+
 
     EMPTY = {
         "Code" : "empty",

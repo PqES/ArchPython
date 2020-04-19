@@ -1,6 +1,6 @@
 <html>
     <body>
-        <table border="1" width="100%" height="100%">
+        <table border="1" width="500px" height="300px">
             <thead>
                 <tr id="header">
                 </tr>
@@ -20,8 +20,14 @@
     var header = document.getElementById("header")
 
     allFiles.forEach(file => {
+        var content = ""
+        if (file === "") {
+            content = "Modules"
+        } else {
+            content = allFiles.indexOf(file)
+        }
         var th = document.createElement("th")
-        var thText = document.createTextNode(file)
+        var thText = document.createTextNode(content)
         th.appendChild(thText)
         header.appendChild(th)
     });
@@ -35,9 +41,21 @@
         var newRow = document.createElement("tr")
 
         var rowHeader = document.createElement("th")
-        var rowHeaderText = document.createTextNode(file)
 
-        rowHeader.appendChild(rowHeaderText)
+        var leftDiv = document.createElement("div")
+        leftDiv.style.cssFloat = "left"
+        leftDiv.style.width = "50%"
+        var leftText = document.createTextNode(file)
+        leftDiv.appendChild(leftText)
+
+        var rightDiv = document.createElement("div")
+        rightDiv.style.cssFloat = "right"
+        rightDiv.style.width = "50%"
+        var rightText = document.createTextNode(allFiles.indexOf(file))
+        rightDiv.appendChild(rightText)
+        
+        rowHeader.appendChild(leftDiv)
+        rowHeader.appendChild(rightDiv)
 
         newRow.appendChild(rowHeader)
 
@@ -56,6 +74,12 @@
             } else {
                 child.style.backgroundColor = "white"
             }
+
+
+
+            var childContent = document.createTextNode(combination[0]["content"])
+            child.style.textAlign = "center";
+            child.appendChild(childContent)
 
             newRow.appendChild(child)
 

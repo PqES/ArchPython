@@ -64,7 +64,7 @@ def cross_information(module_definitions, inferences, types_declared):
     graph = ProblemGraphCreator(inferences, problems).create_graph_from_problems()
     VisGraphCreatorUtil.create_vis_graph(graph)
 
-    matrix = ProblemMatrixCreator(inferences, problems).create_matrix()
+    matrix = ProblemMatrixCreator(inferences, problems, module_definitions).create_matrix()
     MatrixCreatorUtil.create_matrix_file(matrix)
 
     refletion_matrix = ReflectionGraphCreator(inferences, problems, module_definitions).create_graph()
