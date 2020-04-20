@@ -14,7 +14,7 @@ class MatrixCellStatusEnum(Enum):
 
     WARNING = {
         "Code" : "Warning",
-        "Color" : "gray"
+        "Color" : "#b3b3b3"
     }
 
 

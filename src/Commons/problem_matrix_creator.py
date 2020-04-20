@@ -13,6 +13,7 @@ class ProblemMatrixCreator:
         self.module_definitions = module_definitions
 
         self.__problems_cache = {}
+        self.__modules_usage = {}
 
         self.matrix = Matrix("Problem Matrix")
 
@@ -26,6 +27,7 @@ class ProblemMatrixCreator:
         # self.construct_problems_cache()
         self.__define_all_modules()
         self.__create_empty_matrix()
+        self.__calculate_modules_usage()
         self.__define_relationships()
 
         return self.matrix
@@ -53,7 +55,8 @@ class ProblemMatrixCreator:
 
                     if self.__module_use_module(origin_module, module_allowed):
                         self.matrix.edit_cell_status(origin_module, module_allowed, MatrixCellStatusEnum.WARNING)
-                        self.matrix.edit_cell_content(origin_module, module_allowed, "2")
+                        cell_key = (origin_module, module_allowed)
+                        self.matrix.edit_cell_content(origin_module, module_allowed, self.__modules_usage[cell_key])
     
     def _define_divergence_relationships(self):
         for module in self.module_definitions:
@@ -63,6 +66,8 @@ class ProblemMatrixCreator:
 
                     if self.__module_use_module(origin_module, module_forbidden):
                         self.matrix.edit_cell_status(origin_module, module_forbidden, MatrixCellStatusEnum.DIVERGENCE)
+                        cell_key = (origin_module, module_forbidden)
+                        self.matrix.edit_cell_content(origin_module, module_forbidden, self.__modules_usage[cell_key])
     
     def _define_abscence_relationships(self):
         for module in self.module_definitions:
@@ -72,6 +77,7 @@ class ProblemMatrixCreator:
 
                     if not self.__module_use_module(origin_module, module_required):
                         self.matrix.edit_cell_status(origin_module, module_required, MatrixCellStatusEnum.ABSCENCE)
+                        self.matrix.edit_cell_content(origin_module, module_required, 0)
     
     def _define_warning_relationships(self):
         for module in self.module_definitions:
@@ -96,3 +102,11 @@ class ProblemMatrixCreator:
         modules_list = list(all_modules)
         modules_list.sort()
         self.matrix.all_modules = modules_list
+    
+    def __calculate_modules_usage(self):
+        for inference in self.inferences:
+            key = (inference.origin_module, inference.inferred_module_name)
+            if key in self.__modules_usage.keys():
+                self.__modules_usage[key] += 1
+            else:
+                self.__modules_usage[key] = 1
