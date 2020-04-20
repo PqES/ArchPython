@@ -82,34 +82,6 @@ class ProblemMatrixCreator:
                     if not self.__module_use_module(origin_module, module_allowed):
                         self.matrix.edit_cell_status(origin_module, module_allowed, MatrixCellStatusEnum.WARNING)
                         self.matrix.edit_cell_content(origin_module, module_allowed, "?")
-    
-    # def __define_relationships(self):
-    #     all_modules = self.matrix.all_modules
-    #     for module1 in all_modules:
-    #         for module2 in all_modules:
-    #             tuple_key = (module1, module2)
-    #             problem = None
-    #             try :
-    #                 problem = self.__problems_cache[tuple_key]
-    #             except:
-    #                 problem = None
-                
-    #             if problem != None:
-    #                 for restriction_broken in problem.restrictions_broken:
-    #                     if problem.category == "problem":
-    #                         cell = MatrixCell(problem.origin_module.name, restriction_broken, MatrixCellStatusEnum.ERROR_RESTRICTION)
-    #                         self.matrix.add_cell(cell)
-    #                     else:
-    #                         cell = MatrixCell(problem.origin_module.name, restriction_broken, MatrixCellStatusEnum.WARNING_RESTRICTION)
-    #                         self.matrix.add_cell(cell)
-
-    #             elif self.__module_use_module(module1, module2):
-    #                 cell = MatrixCell(module1, module2, MatrixCellStatusEnum.ALLOWED)
-    #                 self.matrix.add_cell(cell)
-    #             else:
-    #                 cell = MatrixCell(module1, module2, MatrixCellStatusEnum.EMPTY)
-    #                 self.matrix.add_cell(cell)
-
 
     def __module_use_module(self, module1, module2):
         for inference in self.inferences:
@@ -121,10 +93,6 @@ class ProblemMatrixCreator:
         all_modules = set()
         for module in self.module_definitions:
             all_modules.add(module.name)
-        self.matrix.all_modules = list(all_modules)
-        
-    # def __define_all_modules(self):
-    #     all_modules = set()
-    #     for inference in self.inferences:
-    #         all_modules.add(inference.origin_module)
-    #     self.matrix.all_modules = list(all_modules)
+        modules_list = list(all_modules)
+        modules_list.sort()
+        self.matrix.all_modules = modules_list

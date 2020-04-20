@@ -67,7 +67,7 @@
             var child = document.createElement("td")
             
 
-            combination = relationships.filter(f => f['from'] == file && f['to'] == childFile)
+            combination = relationships.filter(f => f['from'] == childFile && f['to'] == file)
 
             if (combination.length > 0) {
                 child.style.backgroundColor = combination[0]["color"]
