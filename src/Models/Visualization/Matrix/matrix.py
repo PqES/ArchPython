@@ -3,6 +3,7 @@ class Matrix:
     def __init__(self, name):
         self.name = name
         self.all_modules = []
+        self.all_packages = []
         self.cells = []
 
         self.cells_cache = None
@@ -54,6 +55,9 @@ class Matrix:
         modules_to_return = self.all_modules
         modules_to_return.insert(0, "")
         return modules_to_return
+    
+    def get_all_packages(self):
+        return self.all_packages
     
     def get_cells_for_template(self):
         all_cells = []

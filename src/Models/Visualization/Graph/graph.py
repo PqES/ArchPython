@@ -10,9 +10,14 @@ class Graph:
         self.__nodes_name_cache = []
         self.__current_node_id = 0
     
-    def add_node(self, node_name):
+    def add_node(self, node_name, external_package=False):
         #TODO: checar se já existe um nó com o mesmo id no grafo
-        new_node = Node(self.__current_node_id, node_name)
+        new_node = None
+        if external_package:
+            new_node = Node(self.__current_node_id, node_name, color="#969696")
+        else:
+            new_node = Node(self.__current_node_id, node_name)
+
         if node_name in self.__nodes_name_cache:
             #TODO: Tirar essa string daqui
             raise Exception("Nó já adicionado")
@@ -49,7 +54,8 @@ class Graph:
             nodes.append({
                 "id": node.idx, 
                 "label": node.name,
-                "shape" : node.shape
+                "shape" : node.shape,
+                "color" : node.color
             })
         return nodes
     

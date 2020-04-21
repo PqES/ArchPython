@@ -13,6 +13,7 @@
 
 <script>
     var allFiles = REPLACE_ALL_FILES
+    var allPackages = REPLACE_ALL_PACKAGES
 
     var relationships = REPLACE_RELATIONSHIPS
 
@@ -29,6 +30,15 @@
         var th = document.createElement("th")
         var thText = document.createTextNode(content)
         th.appendChild(thText)
+
+        if (allPackages.includes(file)) {
+            th.style.backgroundColor = "#c5c5c5"
+        } else if (file === ""){
+            th.style.backgroundColor = "#fff"
+        } else {
+            th.style.backgroundColor = "#e8e8e8"
+        }
+
         header.appendChild(th)
     });
 
@@ -56,6 +66,12 @@
         
         rowHeader.appendChild(leftDiv)
         rowHeader.appendChild(rightDiv)
+
+        if (allPackages.includes(file)) {
+            rowHeader.style.backgroundColor = "#c5c5c5"
+        } else {
+            rowHeader.style.backgroundColor = "#e8e8e8"
+        }
 
         newRow.appendChild(rowHeader)
 

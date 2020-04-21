@@ -16,9 +16,11 @@ class MatrixCreatorUtil(object):
     def __modify_template(matrix, matrix_file_template):
         all_modules = matrix.get_all_modules()
         all_cells = matrix.get_cells_for_template()
+        all_packages = matrix.get_all_packages()
 
         final_file = matrix_file_template.replace("REPLACE_ALL_FILES", str(all_modules))
         final_file = final_file.replace("REPLACE_RELATIONSHIPS", str(all_cells))
+        final_file = final_file.replace("REPLACE_ALL_PACKAGES", str(all_packages))
 
         return final_file
 

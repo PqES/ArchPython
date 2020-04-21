@@ -113,6 +113,10 @@ class ReflectionGraphCreator:
             origin_module = inference.origin_module
             inferred_module = inference.inferred_module_name
 
+            if inference.is_external_package and not inferred_module in self.__nodes_cache.keys():
+                new_node = self.graph.add_node(inferred_module, True)
+                self.__nodes_cache[inferred_module] = new_node
+
             if not origin_module in self.__nodes_cache.keys():
                 new_node = self.graph.add_node(origin_module)
                 self.__nodes_cache[origin_module] = new_node

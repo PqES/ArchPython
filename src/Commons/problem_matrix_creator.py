@@ -90,11 +90,15 @@ class ProblemMatrixCreator:
     
     def __define_all_modules(self):
         all_modules = set()
+        packages = set()
         for module in self.module_definitions:
+            if module.packages != None and len(module.packages):
+                packages.add(module.name)
             all_modules.add(module.name)
         modules_list = list(all_modules)
         modules_list.sort()
         self.matrix.all_modules = modules_list
+        self.matrix.all_packages = list(packages)
     
     def __calculate_modules_usage(self):
         for inference in self.inferences:
