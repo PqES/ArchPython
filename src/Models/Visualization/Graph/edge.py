@@ -1,6 +1,6 @@
 class Edge:
 
-    def __init__(self, node_origin, node_destination, status, dashes = False):
+    def __init__(self, node_origin, node_destination, status, dashes = False, label = ""):
         self.node_origin = node_origin
         self.node_destination = node_destination
         
@@ -8,6 +8,8 @@ class Edge:
         self.status = status
 
         self.dashes = dashes
+
+        self.label = label
     
     def get_color(self):
         return self.status["Color"]

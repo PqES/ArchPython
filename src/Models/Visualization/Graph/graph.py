@@ -46,7 +46,11 @@ class Graph:
     def get_nodes_in_vis_model(self):
         nodes = []
         for node in self.nodes:
-            nodes.append({"id": node.idx, "label": node.name})
+            nodes.append({
+                "id": node.idx, 
+                "label": node.name,
+                "shape" : node.shape
+            })
         return nodes
     
     def get_edges_in_vis_model(self):
@@ -57,7 +61,11 @@ class Graph:
                     "from": edge.node_origin.idx, 
                     "to": edge.node_destination.idx, 
                     "arrows" : "to",
-                    "color": edge.get_color()
+                    "color": edge.get_color(),
+                    "label" : edge.label,
+                    "font" : {
+                        "color" : edge.get_color()
+                    }
                 })
             else:
                 edges.append({
@@ -65,6 +73,10 @@ class Graph:
                     "to": edge.node_destination.idx, 
                     "arrows" : "to",
                     "color": edge.get_color(),
-                    "dashes": edge.dashes
+                    "dashes": edge.dashes,
+                    "label" : edge.label,
+                    "font" : {
+                        "color" : edge.get_color()
+                    }
                 })
         return edges

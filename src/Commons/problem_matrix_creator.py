@@ -17,14 +17,7 @@ class ProblemMatrixCreator:
 
         self.matrix = Matrix("Problem Matrix")
 
-    # def construct_problems_cache(self):
-    #     for problem in self.problems:
-    #         for restriction_broken in problem.restrictions_broken:
-    #             tuple_key = (problem.origin_module.name, restriction_broken)
-    #             self.__problems_cache[tuple_key] = problem
-    
     def create_matrix(self):
-        # self.construct_problems_cache()
         self.__define_all_modules()
         self.__create_empty_matrix()
         self.__calculate_modules_usage()

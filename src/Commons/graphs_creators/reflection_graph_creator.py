@@ -16,8 +16,22 @@ class ReflectionGraphCreator:
 
         self.edges_modified = set()
 
+        self.__modules_usage = {}
+    
+    def __create_edge_label(self, node_origin, node_destination, edge_status):
+        if edge_status == EdgeStatusEnum.REQUIRED_NOT_USED:
+            return f"X(#1)"
+        number_of_dependencies = self.__modules_usage[(node_origin, node_destination)]
+        if edge_status == EdgeStatusEnum.REQUIRED_NOT_USED:
+            return f"X(#{number_of_dependencies})"
+        elif edge_status == EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED:
+            return f"!(#{number_of_dependencies})"
+        else:
+            return f"#{number_of_dependencies}"
+
     
     def create_graph(self):
+        self.__calculate_modules_usage()
         self.create_nodes()
         self.create_edges()
         self.paint_problems()
@@ -44,14 +58,19 @@ class ReflectionGraphCreator:
                         origin_node = self.__nodes_cache[origin_module] 
                         final_node = self.__nodes_cache[module_allowed]
 
-                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value)
+                        edge_label = self.__create_edge_label(origin_node.name, final_node.name, EdgeStatusEnum.ALLOWED)
+
+                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value, label=edge_label)
                         self.graph.replace_edge(old_edge, new_edge)
                         self.edges_modified.add(new_edge)
     
     def draw_forbidden_or_not_explicity_forbidden(self):
         edges_not_painted = set(self.graph.edges) - self.edges_modified
         for old_edge in edges_not_painted:
-            new_edge = Edge(old_edge.node_origin, old_edge.node_destination, EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED.value, "true")
+
+            edge_label = self.__create_edge_label(old_edge.node_origin.name, old_edge.node_destination.name, EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED)
+
+            new_edge = Edge(old_edge.node_origin, old_edge.node_destination, EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED.value, "true", label=edge_label)
             self.graph.replace_edge(old_edge, new_edge)
 
     
@@ -67,7 +86,9 @@ class ReflectionGraphCreator:
                         origin_node = self.__nodes_cache[origin_module] 
                         final_node = self.__nodes_cache[module_required]
 
-                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value, "true")
+                        edge_label = self.__create_edge_label(origin_node.name, final_node.name, EdgeStatusEnum.REQUIRED_NOT_USED)
+
+                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value, "true", edge_label)
                         self.graph.add_edge(new_edge)
                         self.edges_modified.add(new_edge)
     
@@ -111,3 +132,11 @@ class ReflectionGraphCreator:
 
             new_edge = Edge(origin_node, final_node, EdgeStatusEnum.UNDEFINED.value)
             self.graph.add_edge(new_edge)
+    
+    def __calculate_modules_usage(self):
+        for inference in self.inferences:
+            key = (inference.origin_module, inference.inferred_module_name)
+            if key in self.__modules_usage.keys():
+                self.__modules_usage[key] += 1
+            else:
+                self.__modules_usage[key] = 1

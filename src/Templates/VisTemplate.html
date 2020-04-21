@@ -35,36 +35,16 @@
     edges: edges
   };
   var options = {
-    layout: {
-      hierarchical: {
-        sortMethod: 'directed',
-        shakeTowards: 'leaves',
-        direction: "LR",
-        levelSeparation: 150,
-        nodeSpacing: 100,
-        treeSpacing: 200,
-        blockShifting: true,
-        edgeMinimization: false,
-        parentCentralization: false,
-      }
-    },
-    edges: {
-      smooth: {
-        enabled: true,
-        type : "straightCross"
-      },
-    },
     physics: {
-      enabled: true,
-      hierarchicalRepulsion: {
-        centralGravity: 0.0,
-        springLength: 200,
+      stabilization: true,
+      barnesHut: {
+        // gravitationalConstant: -12000,
         springConstant: 0.01,
-        nodeDistance: 350,
-        damping: 0.09
+        springLength: 2,
+        avoidOverlap: 0.1
       }
-    }
-    };
+    } 
+  }
   var network = new vis.Network(container, data, options);
 </script>
 
