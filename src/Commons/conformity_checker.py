@@ -86,19 +86,32 @@ class ConformityChecker:
     def __create_file_types_cache(self):
         file_types_cache = {}
         for inference in self.inferences:
-            if inference.file_path in file_types_cache.keys():
-                file_types_cache[inference.file_path].add(inference.variable_type)
+            key = None
+            if inference.is_external_package:
+                key = inference.inferred_module_name
             else:
-                file_types_cache[inference.file_path] = set()
-                file_types_cache[inference.file_path].add(inference.variable_type)
+                key = inference.file_path
+            
+            if key in file_types_cache.keys():
+                file_types_cache[key].add(inference.variable_type)
+            else:
+                file_types_cache[key] = set()
+                file_types_cache[key].add(inference.variable_type)
         self.__file_types_cache = file_types_cache
 
     # Atribui a cada modulo todos os tipos que estão sendo usados dentro dele
     def __assign_types_used(self):
         for module in self.module_definitions:
-            for file_path in module.files:
-                if file_path in self.__file_types_cache.keys():
-                    module.add_types_used_set(self.__file_types_cache[file_path])
+            if module.files != None and len(module.files) > 0:
+                for file_path in module.files:
+                    if file_path in self.__file_types_cache.keys():
+                        module.add_types_used_set(self.__file_types_cache[file_path])
+
+            elif module.packages != None and len(module.packages) > 0:
+                for package in module.packages:
+                    if package in self.__file_types_cache.keys():
+                        module.add_types_used_set(self.__file_types_cache[package])
+
     
     #Atribui a cada modulo todos os arquivos que estão sendo utilizados por ele
     def __assign_files_used(self):
@@ -185,7 +198,11 @@ class ConformityChecker:
     def __restriction_files_per_module(self, restriction_set): 
         restriction_files_per_module = {}
         for module_restriction in restriction_set:
-            restriction_files_per_module[module_restriction] = self.__module_cache[module_restriction].files
+            module = self.__module_cache[module_restriction]
+            if module.files != None and len(module.files) > 0:
+                restriction_files_per_module[module_restriction] = module.files
+            elif module.packages != None and len(module.packages) > 0:
+                restriction_files_per_module[module_restriction] = module.packages
         return restriction_files_per_module
     
     
