@@ -6,7 +6,8 @@
             "./examples/exemplo_artigo/class_c.py"
         ],
         "allowed" : [
-            "B"
+            "B",
+            "pymongo"
         ]
     },
     "B" : {
@@ -15,7 +16,18 @@
             "./examples/exemplo_artigo/class_foo.py"
         ],
         "forbidden" : [
-            "A"
+            "A",
+            "graphviz"
+        ]
+    },
+    "pymongo" : {
+        "packages" : [
+            "pymongo"
+        ]
+    },
+    "graphviz" : {
+        "packages" : [
+            "graphviz"
         ]
     }
 }

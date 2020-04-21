@@ -1,9 +1,9 @@
 class Module:
 
-    def __init__(self, name, package, files, allowed, forbidden, required):
+    def __init__(self, name, packages, files, allowed, forbidden, required):
         
         self.name = name
-        self.package = package
+        self.packages = packages
         self.files = files
         self.allowed = allowed
         self.forbidden = forbidden

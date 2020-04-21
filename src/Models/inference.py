@@ -1,6 +1,6 @@
 class Inference(object):
 
-    def __init__(self, file_path, file_name, class_name, class_function, variable_name, variable_type, inference_variable_path):
+    def __init__(self, file_path, file_name, class_name, class_function, variable_name, variable_type, inference_variable_path, is_external_package = False):
         self.file_path = file_path
         self.file_name = file_name
         self.class_name = class_name
@@ -14,6 +14,7 @@ class Inference(object):
 
         self.inference_variable_path = inference_variable_path
         self.inferred_module_name = None #o módulo que pertence o tipo inferido
+        self.is_external_package = is_external_package
 
     def get_tuple_representation(self):
         return (self.inference_fullname, self.variable_name, self.variable_type)
@@ -23,7 +24,6 @@ class Inference(object):
     
     def set_inferred_module_name(self, module):
         self.inferred_module_name = module
-
     
     def get_key(self):
         return self.inference_fullname + self.variable_name + self.variable_type

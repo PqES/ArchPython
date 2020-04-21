@@ -44,8 +44,12 @@ class Skywalker(object):
     
     def set_modules(self, modules):
         for module in modules:
-            for file in module.files:
-                self.file_modules_cache[file] = module.name
+            if module.files:
+                for file in module.files:
+                    self.file_modules_cache[file] = module.name
+            if module.packages:
+                for package in module.packages:
+                    self.file_modules_cache[package] = module.name
     
     def __write_types_declared(self):
         json_content = []
@@ -206,8 +210,13 @@ class Skywalker(object):
                     inferred_module_name = ""
                     if "builtins" in infered_type.inference_variable_path:
                         inferred_module_name = infered_type.inference_variable_path
+                    elif infered_type.is_external_package:
+                        new_inference.is_external_package = True
+                        inferred_module_name = infered_type.inferred_module_name
                     else:
                         inferred_module_name = self.file_modules_cache[infered_type.inference_variable_path]
+
+
                     new_inference.set_inferred_module_name(inferred_module_name)
                     self.__add_to_list_of_inferences(new_inference)
         if len(self.list_of_inferences) != current_len_of_types:
@@ -259,7 +268,30 @@ class Skywalker(object):
 
         return inference
     
+    def __create_inference_from_external_package(self,definition, inference, from_super=False):
+        file_path = definition.module_path
+        file_name = definition.module_path.split("/")[-1].replace('.py', '')
+        class_name = self.__find_current_class_name(definition)
+        function_name = self.__find_current_function_name(definition)
+        variable_name = definition.name
+        variable_type =  inference.name if not from_super else inference.full_name.split('.')[-2]
+        inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
+
+        new_inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path, True)
+
+        new_inference.set_origin_module(self.file_modules_cache[file_path])
+        module_inferred = (inference.module_name.split(".")[0]).lower()
+        new_inference.set_inferred_module_name(self.file_modules_cache[module_inferred])
+
+        return new_inference
+
+    
     def __create_inference(self, definition, inference, from_super=False):
+        
+        if "site-packages" in inference.module_path and inference.module_name != "builtins":
+            inference = self.__create_inference_from_external_package(definition, inference, from_super)
+            return inference
+
         file_path = definition.module_path
         file_name = definition.module_path.split("/")[-1].replace('.py', '')
         class_name = self.__find_current_class_name(definition)

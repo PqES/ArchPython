@@ -2,7 +2,7 @@ from enum import Enum
 
 class ModuleDefinitionEnum(Enum):
 
-    PACKAGE_KEYWORD = "package"
+    PACKAGE_KEYWORD = "packages"
     FILES_KEYWORD = "files"
     REQUIRED_KEYWORD = "required"
     ALLOWED_KEYWORD = "allowed"

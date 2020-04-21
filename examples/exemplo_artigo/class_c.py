@@ -4,6 +4,7 @@ class C:
 
     def h(self, y):
         d = D()
+        kk = D()
         d.m(y)
     
     def t(self):

@@ -93,7 +93,7 @@ if __name__ == "__main__":
     module_definitions = read_module_definition_file(module_definition_file)
     inferences, types_declared = read_project_folder(target_project_root_path, module_definitions)
     # write_files(files)
-    cross_information(module_definitions, inferences, types_declared)    
+    # cross_information(module_definitions, inferences, types_declared)    
     
 
     # print(project_folder)

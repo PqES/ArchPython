@@ -73,20 +73,22 @@ class ModuleDefinitionLoader(object):
     @staticmethod
     def __process_file_paths(file_content, module, key):
         current_path = os.getcwd()
-        files = file_content[module][key]
-        complete_paths = []
-        for file_path in files:
-            if file_path[:2] == "./":
-                file_path = file_path[2:]
-            complete_path = os.path.join(current_path, file_path)
-            if "*" in complete_path:
-                all_paths = glob.glob(complete_path)
-                complete_paths.extend(all_paths)
-            elif os.path.isfile(complete_path):
-                complete_paths.append(complete_path)
-            else :
-                raise Exception(ModuleDefinitionErrorEnum.FILE_DOESNT_EXIST.value + ": " + complete_path)
-        return complete_paths
+        if key in file_content[module].keys():
+            files = file_content[module][key]
+            complete_paths = []
+            for file_path in files:
+                if file_path[:2] == "./":
+                    file_path = file_path[2:]
+                complete_path = os.path.join(current_path, file_path)
+                if "*" in complete_path:
+                    all_paths = glob.glob(complete_path)
+                    complete_paths.extend(all_paths)
+                elif os.path.isfile(complete_path):
+                    complete_paths.append(complete_path)
+                else :
+                    raise Exception(ModuleDefinitionErrorEnum.FILE_DOESNT_EXIST.value + ": " + complete_path)
+            return complete_paths
+        return []
     
     @staticmethod
     def __create_module(file_content, module):
