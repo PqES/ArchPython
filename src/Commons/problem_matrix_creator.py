@@ -52,9 +52,55 @@ class ProblemMatrixCreator:
                         self.matrix.edit_cell_content(origin_module, module_allowed, self.__modules_usage[cell_key])
     
     def _define_divergence_relationships(self):
+        self.__forbidden_modules_beign_used()
+        self.__not_explicity_allowed_methods_beign_used()
+    
+    def __not_explicity_allowed_methods_beign_used(self):
+        for inference in self.inferences:
+            origin_module = inference.origin_module 
+            inferred_module_name = inference.inferred_module_name
+
+            if origin_module == inferred_module_name:
+                continue
+
+            if not self.__module_is_explicity_allowed(origin_module, inferred_module_name):
+                self.matrix.edit_cell_status(origin_module, inferred_module_name, MatrixCellStatusEnum.DIVERGENCE)
+                cell_key = (origin_module, inferred_module_name)
+                self.matrix.edit_cell_content(origin_module, inferred_module_name, self.__modules_usage[cell_key])
+    
+    def __module_is_explicity_allowed(self, origin_module, inferred_module_name):
+        for module in self.module_definitions:
+            if module.name == origin_module:
+                if (not self.__module_in_forbidden(module, inferred_module_name) and
+                    not self.__module_in_required(module, inferred_module_name) and
+                    not self.__module_in_allowed(module, inferred_module_name)):
+                    return False
+        return True
+    
+    def __module_in_forbidden(self, module, inferred_module_name):
+        if module.forbidden != None and len(module.forbidden) > 0:
+            if inferred_module_name in module.forbidden:
+                return True
+        return False
+    
+    def __module_in_required(self, module, inferred_module_name):
+        if module.required != None and len(module.required) > 0:
+            if inferred_module_name in module.required:
+                return True
+        return False
+    
+    def __module_in_allowed(self, module, inferred_module_name):
+        if module.allowed != None and len(module.allowed) > 0:
+            if inferred_module_name in module.allowed:
+                return True
+        return False
+
+
+    def __forbidden_modules_beign_used(self):
         for module in self.module_definitions:
             if module.forbidden != None:
                 for module_forbidden in module.forbidden:
+
                     origin_module = module.name
 
                     if self.__module_use_module(origin_module, module_forbidden):
