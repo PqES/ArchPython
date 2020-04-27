@@ -25,11 +25,11 @@ def get_file_absolute_path(module_definition_json_path : str):
     return file_absolute_path
 
 #TODO Remover essa função deste arquivo
-def read_module_definition_file(module_definition_json_path):
+def read_module_definition_file(module_definition_json_path, project_root_folder):
     module_definition_json_path = get_file_absolute_path(module_definition_json_path)
 
     file_content = InputReader.get_json_content(module_definition_json_path)
-    module_definitions = ModuleDefinitionLoader.get_module_definitions(file_content)
+    module_definitions = ModuleDefinitionLoader.get_module_definitions(file_content, project_root_folder)
 
     graph = ModuleGraphCreator(module_definitions).create_graph_from_module()
 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     module_definition_file = sys.argv[1]
     target_project_root_path = sys.argv[2]
     
-    module_definitions = read_module_definition_file(module_definition_file)
+    module_definitions = read_module_definition_file(module_definition_file, target_project_root_path)
     inferences, types_declared = read_project_folder(target_project_root_path, module_definitions)
     # write_files(files)
     cross_information(module_definitions, inferences, types_declared)    

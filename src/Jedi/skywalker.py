@@ -205,7 +205,10 @@ class Skywalker(object):
                 for infered_type in infered_types:
                     # inference_path = infered_type.module_path if not infered_type.in_builtin_module() else infered_type.full_name
                     new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type.variable_type, infered_type.inference_variable_path)
-                    new_inference.set_origin_module(self.file_modules_cache[call.file_path_to])
+                    if call.file_path_to in self.file_modules_cache.keys():
+                        new_inference.set_origin_module(self.file_modules_cache[call.file_path_to])
+                    else:
+                        new_inference.set_origin_module(call.file_name_to)
 
                     inferred_module_name = ""
                     if "builtins" in infered_type.inference_variable_path:
@@ -281,14 +284,20 @@ class Skywalker(object):
 
         new_inference.set_origin_module(self.file_modules_cache[file_path])
         module_inferred = (inference.module_name.split(".")[0]).lower()
-        new_inference.set_inferred_module_name(self.file_modules_cache[module_inferred])
-
+        if module_inferred in self.file_modules_cache.keys():
+            new_inference.set_inferred_module_name(self.file_modules_cache[module_inferred])
+        else:
+            new_inference.set_inferred_module_name(module_inferred)
         return new_inference
 
     
     def __create_inference(self, definition, inference, from_super=False):
         
-        if "site-packages" in inference.module_path and inference.module_name != "builtins":
+        if inference.module_path != None and "site-packages" in inference.module_path and inference.module_name != "builtins":
+            inference = self.__create_inference_from_external_package(definition, inference, from_super)
+            return inference
+        
+        if inference.module_name != None and "builtins" in inference.module_name:
             inference = self.__create_inference_from_external_package(definition, inference, from_super)
             return inference
 

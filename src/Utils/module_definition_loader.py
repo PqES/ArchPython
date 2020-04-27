@@ -9,7 +9,7 @@ from Enums.module_definition_enum import ModuleDefinitionEnum
 class ModuleDefinitionLoader(object):
 
     @staticmethod
-    def get_module_definitions(file_content):
+    def get_module_definitions(file_content, project_root_folder):
         module_definitions = []
         for module in file_content:
             try:
@@ -18,7 +18,7 @@ class ModuleDefinitionLoader(object):
                 print(f"An exception was raised for {module} : {str(e)}")
                 sys.exit(1)
 
-            module = ModuleDefinitionLoader.__create_module(file_content, module)
+            module = ModuleDefinitionLoader.__create_module(file_content, module, project_root_folder)
             module_definitions.append(module)
         module_definitions = ModuleDefinitionLoader.__assign_restriction_files(module_definitions)
         return module_definitions
@@ -62,17 +62,17 @@ class ModuleDefinitionLoader(object):
 
 
     @staticmethod
-    def __try_get_value_from_module(file_content, module, key):
+    def __try_get_value_from_module(file_content, module, key, project_root_folder = ""):
         if key == ModuleDefinitionEnum.FILES_KEYWORD.value:
-            return ModuleDefinitionLoader.__process_file_paths(file_content, module, key)
+            return ModuleDefinitionLoader.__process_file_paths(file_content, module, key, project_root_folder)
         try:
             return file_content[module][key]
         except KeyError:
             return None
     
     @staticmethod
-    def __process_file_paths(file_content, module, key):
-        current_path = os.getcwd()
+    def __process_file_paths(file_content, module, key, project_root_folder):
+        current_path = project_root_folder
         if key in file_content[module].keys():
             files = file_content[module][key]
             complete_paths = []
@@ -91,10 +91,10 @@ class ModuleDefinitionLoader(object):
         return []
     
     @staticmethod
-    def __create_module(file_content, module):
+    def __create_module(file_content, module, project_root_folder):
         name = module
         package = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.PACKAGE_KEYWORD.value)
-        files = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FILES_KEYWORD.value)
+        files = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FILES_KEYWORD.value, project_root_folder)
         allowed = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.ALLOWED_KEYWORD.value)
         forbidden = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value)
         required = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.REQUIRED_KEYWORD.value)
