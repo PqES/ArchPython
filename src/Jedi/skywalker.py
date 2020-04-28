@@ -160,7 +160,8 @@ class Skywalker(object):
                             continue
 
                             
-                        
+                        if inference.module_name != None and "builtins" in inference.module_name:
+                            continue
                         inference_object = self.__create_inference(definition, inference)
                         self.__add_to_list_of_inferences(inference_object)
                 
@@ -236,7 +237,7 @@ class Skywalker(object):
         return all_inferences
 
     def __add_to_list_of_inferences(self,new_inference):
-        if "builtins" in new_inference.inferred_module_name:
+        if "builtins" in new_inference.inferred_module_name or "builtinsi" in new_inference.inferred_module_name or "builtinsi" in new_inference.origin_module:
             return
 
         for inference in self.list_of_inferences:
