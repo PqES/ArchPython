@@ -85,7 +85,15 @@ class Skywalker(object):
     def __search_project_folder(self):
         read_py_files = ReadPyFiles(self.project_root_folder)
         read_py_files.find_pys()
-        self.files = read_py_files.get_files_path()
+        all_files = read_py_files.get_files_path()
+
+        files_filtered = []
+
+        for file in all_files:
+            if file in self.file_modules_cache.keys():
+                files_filtered.append(file)
+        
+        self.files = files_filtered
     
     def __base_step(self):
         if self.files == None:

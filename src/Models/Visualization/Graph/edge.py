@@ -13,3 +13,6 @@ class Edge:
     
     def get_color(self):
         return self.status["Color"]
+    
+    def get_width(self):
+        return self.status["Width"]

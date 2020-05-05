@@ -69,6 +69,7 @@ class Graph:
                     "arrows" : "to",
                     "color": edge.get_color(),
                     "label" : edge.label,
+                    "width" : edge.get_width(),
                     "font" : {
                         "color" : edge.get_color()
                     }
@@ -81,6 +82,7 @@ class Graph:
                     "color": edge.get_color(),
                     "dashes": edge.dashes,
                     "label" : edge.label,
+                    "width" : edge.get_width(),
                     "font" : {
                         "color" : edge.get_color()
                     }

@@ -14,6 +14,7 @@ class ProblemMatrixCreator:
 
         self.__problems_cache = {}
         self.__modules_usage = {}
+        self.__modules_names_cache = set()
 
         self.matrix = Matrix("Problem Matrix")
 
@@ -42,18 +43,57 @@ class ProblemMatrixCreator:
     
     def _define_allowed_relationships(self):
         for module in self.module_definitions:
-            if module.allowed != None:
-                for module_allowed in module.allowed:
-                    origin_module = module.name
+            all_modules_allowed = self.__get_all_modules_allowed(module)
 
-                    if self.__module_use_module(origin_module, module_allowed):
-                        self.matrix.edit_cell_status(origin_module, module_allowed, MatrixCellStatusEnum.WARNING)
-                        cell_key = (origin_module, module_allowed)
-                        self.matrix.edit_cell_content(origin_module, module_allowed, self.__modules_usage[cell_key])
+            for module_allowed in all_modules_allowed:
+                origin_module = module.name
+
+                if self.__module_use_module(origin_module, module_allowed):
+                    self.matrix.edit_cell_status(origin_module, module_allowed, MatrixCellStatusEnum.ALLOWED)
+                    cell_key = (origin_module, module_allowed)
+                    self.matrix.edit_cell_content(origin_module, module_allowed, self.__modules_usage[cell_key])
+        
+                
+            
+            # if module.required != None:
+            #     for module_required in module.required:
+            #         origin_module = module.name
+
+            #         if self.__module_use_module(origin_module, module_required):
+            #             self.matrix.edit_cell_status(origin_module, module_required, MatrixCellStatusEnum.ALLOWED)
+            #             cell_key = (origin_module, module_required)
+            #             self.matrix.edit_cell_content(origin_module, module_required, self.__modules_usage[cell_key])
+            
+            # if module.forbidden != None:
+            #     all_modules_allowed = self.__get_all_modules_allowed(module)
+            #     for module_required in module.required:
+            #         origin_module = module.name
+
+            #         if self.__module_use_module(origin_module, module_required):
+            #             self.matrix.edit_cell_status(origin_module, module_required, MatrixCellStatusEnum.ALLOWED)
+            #             cell_key = (origin_module, module_required)
+            #             self.matrix.edit_cell_content(origin_module, module_required, self.__modules_usage[cell_key])
+            
+    def __get_all_modules_allowed(self, module):
+        all_modules_allowed = set()
+        if module.allowed != None:
+            all_modules_allowed = all_modules_allowed.union(module.allowed)
+        
+        if module.required != None:
+            all_modules_allowed = all_modules_allowed.union(module.required)
+        
+        if module.forbidden != None:
+            modules_allowed = self.__modules_names_cache.difference(module.forbidden)
+            all_modules_allowed = all_modules_allowed.union(modules_allowed)
+        
+        if module.name in all_modules_allowed:
+            all_modules_allowed.remove(module.name)
+        return all_modules_allowed
+    
     
     def _define_divergence_relationships(self):
         self.__forbidden_modules_beign_used()
-        self.__not_explicity_allowed_methods_beign_used()
+        # self.__not_explicity_allowed_methods_beign_used()
     
     def __not_explicity_allowed_methods_beign_used(self):
         for inference in self.inferences:
@@ -71,8 +111,8 @@ class ProblemMatrixCreator:
     def __module_is_explicity_allowed(self, origin_module, inferred_module_name):
         for module in self.module_definitions:
             if module.name == origin_module:
-                if (not self.__module_in_forbidden(module, inferred_module_name) and
-                    not self.__module_in_required(module, inferred_module_name) and
+                # not self.__module_in_forbidden(module, inferred_module_name) and
+                if (not self.__module_in_required(module, inferred_module_name) and
                     not self.__module_in_allowed(module, inferred_module_name)):
                     return False
         return True
@@ -145,6 +185,7 @@ class ProblemMatrixCreator:
         modules_list.sort()
         self.matrix.all_modules = modules_list
         self.matrix.all_packages = list(packages)
+        self.__modules_names_cache = set(all_modules)
     
     def __calculate_modules_usage(self):
         for inference in self.inferences:

@@ -20,7 +20,7 @@ class ReflectionGraphCreator:
     
     def __create_edge_label(self, node_origin, node_destination, edge_status):
         if edge_status == EdgeStatusEnum.REQUIRED_NOT_USED:
-            return f"X(#1)"
+            return f"X(#0)"
         number_of_dependencies = self.__modules_usage[(node_origin, node_destination)]
         if edge_status == EdgeStatusEnum.REQUIRED_NOT_USED:
             return f"X(#{number_of_dependencies})"
@@ -63,6 +63,7 @@ class ReflectionGraphCreator:
                         new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value, label=edge_label)
                         self.graph.replace_edge(old_edge, new_edge)
                         self.edges_modified.add(new_edge)
+
             if module.required != None:
                 for module_required in module.required:
                     origin_module = module.name
@@ -78,6 +79,23 @@ class ReflectionGraphCreator:
                         new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value, label=edge_label)
                         self.graph.replace_edge(old_edge, new_edge)
                         self.edges_modified.add(new_edge)
+            
+            if module.forbidden != None:
+                modules_to_paint = set(self.__nodes_cache.keys()).difference(set(module.forbidden))
+                for module_allowed in modules_to_paint:
+                    origin_module = module.name
+                    old_edge = self.graph.edge_exists(origin_module, module_allowed)
+
+                    if old_edge != None:
+                        origin_node = self.__nodes_cache[origin_module] 
+                        final_node = self.__nodes_cache[module_allowed]
+
+                        edge_label = self.__create_edge_label(origin_node.name, final_node.name, EdgeStatusEnum.ALLOWED)
+
+                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED.value, label=edge_label)
+                        self.graph.replace_edge(old_edge, new_edge)
+                        self.edges_modified.add(new_edge)
+
     
     def draw_forbidden_or_not_explicity_forbidden(self):
         edges_not_painted = set(self.graph.edges) - self.edges_modified
