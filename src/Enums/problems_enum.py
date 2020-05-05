@@ -15,5 +15,15 @@ class ProblemsEnum(Enum):
     REQUIRED_RESTRICTION_BROKEN = {
         "Code" : "REQUIRED_RESTRICTION_BROKEN",
         "Message" : "A mandatory restriction was not used"
-        
+    }
+
+
+    DIVERGENCE = {
+        "Code" : "DIVERGENCE",
+        "Message" : "Module {} cannot depend on module {}."
+    }
+
+    ABSENCE = {
+        "Code" : "ABSENCE",
+        "Message" : "Module {} does not implement the required module {}."
     }

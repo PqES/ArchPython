@@ -16,6 +16,8 @@ class Inference(object):
         self.inferred_module_name = None #o módulo que pertence o tipo inferido
         self.is_external_package = is_external_package
 
+        # self.inferred_full_name = 
+
     def get_tuple_representation(self):
         return (self.inference_fullname, self.variable_name, self.variable_type)
     

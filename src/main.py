@@ -14,6 +14,7 @@ from Commons.graphs_creators.inference_graph_creator import InferenceGraphCreato
 from Commons.graphs_creators.problem_graph_creator import ProblemGraphCreator
 from Commons.graphs_creators.reflection_graph_creator import ReflectionGraphCreator
 from Commons.problem_matrix_creator import ProblemMatrixCreator
+from Commons.result_file_creator import ResultFileCreator
 
 
 
@@ -64,11 +65,15 @@ def cross_information(module_definitions, inferences, types_declared):
     # graph = ProblemGraphCreator(inferences, problems).create_graph_from_problems()
     # VisGraphCreatorUtil.create_vis_graph(graph)
 
+    result_file_creator = ResultFileCreator(inferences, module_definitions)
+    result_file_creator.create_json_file()
+
     matrix = ProblemMatrixCreator(inferences, problems, module_definitions).create_matrix()
     MatrixCreatorUtil.create_matrix_file(matrix)
 
     refletion_matrix = ReflectionGraphCreator(inferences, module_definitions).create_graph()
     VisGraphCreatorUtil.create_vis_graph(refletion_matrix)
+
     pass
 
 def write_files(files):
