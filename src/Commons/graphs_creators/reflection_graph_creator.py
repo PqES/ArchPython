@@ -5,22 +5,23 @@ from Enums.edge_status_enum import EdgeStatusEnum
 
 class ReflectionGraphCreator:
 
-    def __init__(self, inferences, problems, module_definitions):
+    def __init__(self, inferences, module_definitions):
         self.inferences = inferences
-        self.problems = problems
         self.module_definitions = module_definitions
 
         self.graph = Graph("Reflection Graph")
 
         self.__nodes_cache = {}
 
+        self.__file_inferences_dict = {}
+
         self.edges_modified = set()
 
         self.__modules_usage = {}
     
-    def __create_edge_label(self, node_origin, node_destination, edge_status):
+    def __create_edge_label(self, node_origin, node_destination, edge_status, usage_count = None):
         if edge_status == EdgeStatusEnum.REQUIRED_NOT_USED:
-            return f"X(#0)"
+            return f"X(#{usage_count})"
         number_of_dependencies = self.__modules_usage[(node_origin, node_destination)]
         if edge_status == EdgeStatusEnum.REQUIRED_NOT_USED:
             return f"X(#{number_of_dependencies})"
@@ -32,12 +33,23 @@ class ReflectionGraphCreator:
     
     def create_graph(self):
         self.__calculate_modules_usage()
+        self.__create_file_inference_dict()
         self.create_nodes()
         self.create_edges()
         self.paint_problems()
 
         return self.graph
     
+    def __create_file_inference_dict(self):
+        file_inference_dict = {}
+        for inference in self.inferences:
+            file_path = inference.file_path
+            if file_path in file_inference_dict.keys():
+                file_inference_dict[file_path].append(inference)
+            else:
+                file_inference_dict[file_path] = [] 
+                file_inference_dict[file_path].append(inference)
+        self.__file_inferences_dict = file_inference_dict
 
     def paint_problems(self):
 
@@ -106,24 +118,58 @@ class ReflectionGraphCreator:
             new_edge = Edge(old_edge.node_origin, old_edge.node_destination, EdgeStatusEnum.FORBIDDEN_OR_NOT_EXPLICITY_ALLOWED.value, "true", label=edge_label)
             self.graph.replace_edge(old_edge, new_edge)
 
-    
+    #Required but not used
     def draw_absences(self):
         for module in self.module_definitions:
             if module.required != None:
+                # verificar ressposta do terra dps
                 for module_required in module.required:
-                    origin_module = module.name
 
-                    old_edge = self.graph.edge_exists(origin_module, module_required)
+                    file_dont_use_a_module = False
+                    use_count = 0
 
-                    if old_edge == None:
-                        origin_node = self.__nodes_cache[origin_module] 
-                        final_node = self.__nodes_cache[module_required]
+                    for file in module.files:
+                        if not self.__file_access_module(file, module_required):
+                            file_dont_use_a_module = True
+                        else:
+                            use_count += 1
+                    
+                    if file_dont_use_a_module:
+                        old_edge = self.graph.edge_exists(module.name, module_required)
 
-                        edge_label = self.__create_edge_label(origin_node.name, final_node.name, EdgeStatusEnum.REQUIRED_NOT_USED)
+                        if old_edge != None:
 
-                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value, "true", edge_label)
-                        self.graph.add_edge(new_edge)
-                        self.edges_modified.add(new_edge)
+                            origin_module = module.name
+                            
+                            origin_node = self.__nodes_cache[origin_module] 
+                            final_node = self.__nodes_cache[module_required]
+
+                            edge_label = self.__create_edge_label(origin_node.name, final_node.name, EdgeStatusEnum.REQUIRED_NOT_USED, use_count)
+
+                            new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value, "true", edge_label)
+                            self.graph.replace_edge(old_edge, new_edge)
+                            self.edges_modified.add(new_edge)
+
+                    #Para cada file dentro de module
+                    #Verificar se file acessa module_required
+                    #Eu preciso verificar se TODOS os files de module acessam os modules_required
+
+                    # old_edge = self.graph.edge_exists(origin_module, module_required)
+
+                    # if old_edge == None:
+                    #     origin_node = self.__nodes_cache[origin_module] 
+                    #     final_node = self.__nodes_cache[module_required]
+
+                        
+    
+    def __file_access_module(self, file, module):
+        if "__init__" in file:
+            return True
+        inferences = self.__file_inferences_dict[file]
+        for inference in inferences:
+            if inference.inferred_module_name == module:
+                return True
+        return False
     
     def draw_allowed_not_used(self):
         for module in self.module_definitions:

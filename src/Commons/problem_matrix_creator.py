@@ -16,15 +16,29 @@ class ProblemMatrixCreator:
         self.__modules_usage = {}
         self.__modules_names_cache = set()
 
+        self.__file_inferences_dict = {}
+
         self.matrix = Matrix("Problem Matrix")
 
     def create_matrix(self):
+        self.__create_file_inference_dict()
         self.__define_all_modules()
         self.__create_empty_matrix()
         self.__calculate_modules_usage()
         self.__define_relationships()
 
         return self.matrix
+    
+    def __create_file_inference_dict(self):
+        file_inference_dict = {}
+        for inference in self.inferences:
+            file_path = inference.file_path
+            if file_path in file_inference_dict.keys():
+                file_inference_dict[file_path].append(inference)
+            else:
+                file_inference_dict[file_path] = [] 
+                file_inference_dict[file_path].append(inference)
+        self.__file_inferences_dict = file_inference_dict
     
     def __create_empty_matrix(self):
         all_modules = self.matrix.all_modules
@@ -152,11 +166,36 @@ class ProblemMatrixCreator:
         for module in self.module_definitions:
             if module.required != None:
                 for module_required in module.required:
-                    origin_module = module.name
 
-                    if not self.__module_use_module(origin_module, module_required):
+                    file_dont_use_a_module = False
+                    use_count = 0
+
+                    for file in module.files:
+                        if not self.__file_access_module(file, module_required):
+                            file_dont_use_a_module = True
+                        else:
+                            use_count += 1
+                    
+                    if file_dont_use_a_module:
+                        origin_module = module.name
                         self.matrix.edit_cell_status(origin_module, module_required, MatrixCellStatusEnum.ABSCENCE)
-                        self.matrix.edit_cell_content(origin_module, module_required, 0)
+                        self.matrix.edit_cell_content(origin_module, module_required, use_count)
+
+                  
+                    # origin_module = module.name
+
+                    # if not self.__module_use_module(origin_module, module_required):
+                    #     self.matrix.edit_cell_status(origin_module, module_required, MatrixCellStatusEnum.ABSCENCE)
+                    #     self.matrix.edit_cell_content(origin_module, module_required, 0)
+    
+    def __file_access_module(self, file, module):
+        if "__init__" in file:
+            return True
+        inferences = self.__file_inferences_dict[file]
+        for inference in inferences:
+            if inference.inferred_module_name == module:
+                return True
+        return False
     
     def _define_warning_relationships(self):
         for module in self.module_definitions:
