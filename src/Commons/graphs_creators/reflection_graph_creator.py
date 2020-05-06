@@ -153,17 +153,6 @@ class ReflectionGraphCreator:
                             new_edge = Edge(origin_node, final_node, EdgeStatusEnum.REQUIRED_NOT_USED.value, "true", edge_label)
                             self.graph.replace_edge(old_edge, new_edge)
                             self.edges_modified.add(new_edge)
-
-                    #Para cada file dentro de module
-                    #Verificar se file acessa module_required
-                    #Eu preciso verificar se TODOS os files de module acessam os modules_required
-
-                    # old_edge = self.graph.edge_exists(origin_module, module_required)
-
-                    # if old_edge == None:
-                    #     origin_node = self.__nodes_cache[origin_module] 
-                    #     final_node = self.__nodes_cache[module_required]
-
                         
     
     def __file_access_module(self, file, module):

@@ -165,10 +165,13 @@ class ProblemMatrixCreator:
     def _define_abscence_relationships(self):
         for module in self.module_definitions:
             if module.required != None:
+                file_dont_use_a_module = False
                 for module_required in module.required:
 
-                    file_dont_use_a_module = False
                     use_count = 0
+
+                    if file_dont_use_a_module:
+                        return
 
                     for file in module.files:
                         if not self.__file_access_module(file, module_required):
