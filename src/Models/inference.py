@@ -1,6 +1,6 @@
 class Inference(object):
 
-    def __init__(self, file_path, file_name, class_name, class_function, variable_name, variable_type, inference_variable_path, is_external_package = False):
+    def __init__(self, file_path, file_name, class_name, class_function, variable_name, variable_type, inference_variable_path, is_external_package = False, line_no = 0):
         self.file_path = file_path
         self.file_name = file_name
         self.class_name = class_name
@@ -15,6 +15,8 @@ class Inference(object):
         self.inference_variable_path = inference_variable_path
         self.inferred_module_name = None #o módulo que pertence o tipo inferido
         self.is_external_package = is_external_package
+
+        self.line_no = line_no
 
         # self.inferred_full_name = 
 

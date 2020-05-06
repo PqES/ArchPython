@@ -132,7 +132,7 @@ class Skywalker(object):
                         current_goto_full_name = self.__generate_function_name(current_goto)
 
 
-                        call = Call(file_path_from, variable_from, current_definition_full_name, file_path_to, variable_to, current_goto_full_name)
+                        call = Call(file_path_from, variable_from, current_definition_full_name, file_path_to, variable_to, current_goto_full_name, line_no_from = current_definition.line)
                         self.list_of_calls.append(call)
                     else:
                         should_verify_params = False
@@ -213,7 +213,7 @@ class Skywalker(object):
             if infered_types != []:
                 for infered_type in infered_types:
                     # inference_path = infered_type.module_path if not infered_type.in_builtin_module() else infered_type.full_name
-                    new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type.variable_type, infered_type.inference_variable_path)
+                    new_inference = Inference(call.file_path_to, call.file_name_to, call.class_to, call.function_to, call.variable_to, infered_type.variable_type, infered_type.inference_variable_path, line_no=call.line_no_from)
                     if call.file_path_to in self.file_modules_cache.keys():
                         new_inference.set_origin_module(self.file_modules_cache[call.file_path_to])
                     else:
@@ -268,8 +268,9 @@ class Skywalker(object):
         variable_name = "function_return"
         variable_type = inference.name
         inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
+        line_no = definition.line
 
-        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
+        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path, line_no=line_no)
 
         inference.set_origin_module(self.file_modules_cache[file_path])
 
@@ -288,8 +289,9 @@ class Skywalker(object):
         variable_name = definition.name
         variable_type =  inference.name if not from_super else inference.full_name.split('.')[-2]
         inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
+        line_no = definition.line
 
-        new_inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path, True)
+        new_inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path, True, line_no=line_no)
 
         new_inference.set_origin_module(self.file_modules_cache[file_path])
         module_inferred = (inference.module_name.split(".")[0]).lower()
@@ -317,8 +319,9 @@ class Skywalker(object):
         variable_name = definition.name
         variable_type =  inference.name if not from_super else inference.full_name.split('.')[-2]
         inference_path = inference.module_path if not inference.in_builtin_module() else inference.full_name
+        line_no = definition.line
 
-        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path)
+        inference = Inference(file_path, file_name, class_name, function_name, variable_name, variable_type, inference_path, line_no=line_no)
 
         inference.set_origin_module(self.file_modules_cache[file_path])
 

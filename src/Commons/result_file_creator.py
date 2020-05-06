@@ -33,14 +33,13 @@ class ResultFileCreator:
                 file_inference_dict[file_path].append(inference)
         self.__file_inferences_dict = file_inference_dict
 
+    #TODO: Trocar o nome dessa função
     def __file_access_module(self, file, module):
-        if "__init__" in file:
-            return True
         inferences = self.__file_inferences_dict[file]
         for inference in inferences:
             if inference.inferred_module_name == module:
-                return True
-        return False    
+                return inference.line_no
+        return None    
     
     
     def find_abscences(self):
@@ -48,20 +47,41 @@ class ResultFileCreator:
             if module.required != None:
                 for module_required in module.required:
                     for file in module.files:
-                        if not self.__file_access_module(file, module_required):
+                        if "__init__" in file:
+                            continue
+                        if self.__file_access_module(file, module_required) == None:
                             self.__report_abcense(module, file, module_required)
     
+    def find_divergences(self):
+        for module in self.module_definitions:
+            if module.forbidden != None:
+                for module_forbidden in module.forbidden:
+                    for file in module.files:
+                        if "__init__" in file:
+                            continue
+                        line_number = self.__file_access_module(file, module_forbidden)
+                        if  line_number != None:
+                            self.__report_divergence(module, file, module_forbidden, line_number)
+    
     def __report_abcense(self, module, file, module_required_name):
-
         problem_description = {
             'origin_module' : module.name,
             'origin_line': '',
             'origin_file_path' : file,
             'target_module' : module_required_name,
-            'target_class' : '',
             'constraint' : ProblemsEnum.ABSENCE.value['Message'].format(module.name, module_required_name)
         }
         self.file_content[ProblemsEnum.ABSENCE.name].append(problem_description)
+
+    def __report_divergence(self, module, file, module_not_allowed, line_number):
+        problem_description = {
+            'origin_module' : module.name,
+            'origin_line': line_number,
+            'origin_file_path' : file,
+            'target_module' : module_not_allowed,
+            'constraint' : ProblemsEnum.DIVERGENCE.value['Message'].format(module.name, module_not_allowed)
+        }
+        self.file_content[ProblemsEnum.DIVERGENCE.name].append(problem_description)
 
     def __report_problem(self, module, module_required_name, problem_enum):
         problem_description = {
@@ -74,5 +94,4 @@ class ResultFileCreator:
         self.file_content[problem_enum.name].append(problem_description)
 
 
-    def find_divergences(self):
-        pass
+   

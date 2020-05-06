@@ -1,6 +1,6 @@
 class Call:
 
-    def __init__(self, file_path_from, variable_from, full_name_from , file_path_to, variable_to, full_name_to):
+    def __init__(self, file_path_from, variable_from, full_name_from , file_path_to, variable_to, full_name_to, line_no_from):
         
         self.file_path_from = file_path_from
         self.full_name_from = full_name_from
@@ -22,4 +22,6 @@ class Call:
         self.file_name_to = full_name_to_split[0]
         self.class_to = full_name_to_split[1]
         self.function_to = full_name_to_split[2]
+
+        self.line_no_from = line_no_from
     

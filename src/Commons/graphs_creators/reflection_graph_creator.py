@@ -123,9 +123,13 @@ class ReflectionGraphCreator:
         for module in self.module_definitions:
             if module.required != None:
                 # verificar ressposta do terra dps
+                file_dont_use_a_module = False
                 for module_required in module.required:
+                    
+                    # Se existir um arquivo q não usa, quebra e para de contar (talvez arrumar isso )
+                    if file_dont_use_a_module:
+                        return
 
-                    file_dont_use_a_module = False
                     use_count = 0
 
                     for file in module.files:
