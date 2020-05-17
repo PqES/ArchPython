@@ -194,6 +194,10 @@ class ProblemMatrixCreator:
     def __file_access_module(self, file, module):
         if "__init__" in file:
             return True
+        
+        if file not in self.__file_inferences_dict.keys():
+            return False
+             
         inferences = self.__file_inferences_dict[file]
         for inference in inferences:
             if inference.inferred_module_name == module:

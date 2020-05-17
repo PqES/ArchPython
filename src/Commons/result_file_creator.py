@@ -35,6 +35,8 @@ class ResultFileCreator:
 
     #TODO: Trocar o nome dessa função
     def __file_access_module(self, file, module):
+        if file not in self.__file_inferences_dict.keys():
+            return None
         inferences = self.__file_inferences_dict[file]
         for inference in inferences:
             if inference.inferred_module_name == module:
