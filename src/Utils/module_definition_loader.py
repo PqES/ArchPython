@@ -77,9 +77,9 @@ class ModuleDefinitionLoader(object):
             files = file_content[module][key]
             complete_paths = []
             for file_path in files:
-                if file_path[:2] == "./":
+                if file_path[:2] == ".\\":
                     file_path = file_path[2:]
-                complete_path = os.path.join(current_path, file_path)
+                complete_path = os.path.join(current_path,file_path)
                 if "*" in complete_path:
                     all_paths = glob.glob(complete_path)
                     complete_paths.extend(all_paths)
