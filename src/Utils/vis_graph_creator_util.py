@@ -20,6 +20,8 @@ class VisGraphCreatorUtil(object):
         edges = graph.get_edges_in_vis_model()
         final_vis_file = vis_file_template.replace("REPLACE_GRAPH_NODES", str(nodes))
         final_vis_file = final_vis_file.replace("REPLACE_GRAPH_EDGES", str(edges))
+        final_vis_file = final_vis_file.replace("True", "true")
+        final_vis_file = final_vis_file.replace("False", "false")
 
         return final_vis_file
 

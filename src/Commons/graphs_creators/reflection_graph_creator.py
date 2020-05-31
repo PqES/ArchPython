@@ -183,23 +183,51 @@ class ReflectionGraphCreator:
                         new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED_NOT_USED.value)
                         self.graph.add_edge(new_edge)
                         self.edges_modified.add(new_edge)
+                        
+            if module.forbidden != None:
+                all_modules = set([module.name for module in self.module_definitions])
+                forbidden_set = set(module.forbidden)
+
+                modules_to_paint = all_modules.difference(forbidden_set)
+                modules_to_paint.remove(module.name)
+
+                origin_module = module.name
+
+
+                for module_allowed in modules_to_paint:
+
+                    old_edge = self.graph.edge_exists(origin_module, module_allowed)
+
+                    if old_edge == None:
+                        origin_node = self.__nodes_cache[origin_module] 
+                        final_node = self.__nodes_cache[module_allowed]
+
+                        new_edge = Edge(origin_node, final_node, EdgeStatusEnum.ALLOWED_NOT_USED.value)
+                        self.graph.add_edge(new_edge)
+                        self.edges_modified.add(new_edge)
 
     def create_nodes(self):
-        for inference in self.inferences:
-            origin_module = inference.origin_module
-            inferred_module = inference.inferred_module_name
+        all_modules = set([module.name for module in self.module_definitions])
 
-            if inference.is_external_package and not inferred_module in self.__nodes_cache.keys():
-                new_node = self.graph.add_node(inferred_module, True)
-                self.__nodes_cache[inferred_module] = new_node
+        for module in all_modules:
+            new_node = self.graph.add_node(module)
+            self.__nodes_cache[module] = new_node
 
-            if not origin_module in self.__nodes_cache.keys():
-                new_node = self.graph.add_node(origin_module)
-                self.__nodes_cache[origin_module] = new_node
+        # for inference in self.inferences:
+        #     origin_module = inference.origin_module
+        #     inferred_module = inference.inferred_module_name
+
+        #     if inference.is_external_package and not inferred_module in self.__nodes_cache.keys():
+        #         new_node = self.graph.add_node(inferred_module, True)
+        #         self.__nodes_cache[inferred_module] = new_node
+
+        #     if not origin_module in self.__nodes_cache.keys():
+        #         new_node = self.graph.add_node(origin_module)
+        #         self.__nodes_cache[origin_module] = new_node
             
-            if not inferred_module in self.__nodes_cache.keys():
-                new_node = self.graph.add_node(inferred_module)
-                self.__nodes_cache[inferred_module] = new_node
+        #     if not inferred_module in self.__nodes_cache.keys():
+        #         new_node = self.graph.add_node(inferred_module)
+        #         self.__nodes_cache[inferred_module] = new_node
     
     def create_edges(self):
         for inference in self.inferences:

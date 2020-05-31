@@ -15,6 +15,10 @@ from Commons.graphs_creators.problem_graph_creator import ProblemGraphCreator
 from Commons.graphs_creators.reflection_graph_creator import ReflectionGraphCreator
 from Commons.problem_matrix_creator import ProblemMatrixCreator
 from Commons.result_file_creator import ResultFileCreator
+from Commons.new_conformity_checker import NewConformityChecker
+from Commons.graphs_creators.new_reflection_graph_creator import NewReflectionGraphCreator
+from Commons.dsm_creator import DSMCreator
+
 
 
 
@@ -56,24 +60,17 @@ def read_project_folder(target_project_root_path, module_definitions):
     return [inferences, types_defined]
 
 #Função que cruza as informações do modulo com as inferencias realizadas
-def cross_information(module_definitions, inferences, types_declared):
-    cc = ConformityChecker(module_definitions, inferences, types_declared)
-    cc.check_conformity()
+def cross_information(module_definitions, inferences):
 
-    problems = cc.get_problems()
+    ncc = NewConformityChecker(inferences, module_definitions).check_conformity()
 
-    # graph = ProblemGraphCreator(inferences, problems).create_graph_from_problems()
-    # VisGraphCreatorUtil.create_vis_graph(graph)
+    refletion_graph = NewReflectionGraphCreator(ncc, module_definitions).create_graph()
+    VisGraphCreatorUtil.create_vis_graph(refletion_graph)
 
-    result_file_creator = ResultFileCreator(inferences, module_definitions)
-    result_file_creator.create_json_file()
-
-    matrix = ProblemMatrixCreator(inferences, problems, module_definitions).create_matrix()
+    matrix = DSMCreator(ncc, module_definitions).create_matrix()
     MatrixCreatorUtil.create_matrix_file(matrix)
 
-    refletion_matrix = ReflectionGraphCreator(inferences, module_definitions).create_graph()
-    VisGraphCreatorUtil.create_vis_graph(refletion_matrix)
-
+ 
     pass
 
 def write_files(files):
@@ -98,7 +95,7 @@ if __name__ == "__main__":
     module_definitions = read_module_definition_file(module_definition_file, target_project_root_path)
     inferences, types_declared = read_project_folder(target_project_root_path, module_definitions)
     # write_files(files)
-    cross_information(module_definitions, inferences, types_declared)    
+    cross_information(module_definitions, inferences)    
     
 
     # print(project_folder)

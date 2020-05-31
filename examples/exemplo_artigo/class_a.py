@@ -1,20 +1,60 @@
-from class_foo import Foo
-from class_b import B
-from class_d import D
-from teste_sub.class_e import E
-from graphviz import Digraph
-from pymongo import MongoClient
-
-
-import os
+from random import randint
 
 class A:
     def f(self):
-        caminho_atual = os.getcwd()
-        client = MongoClient()
-        g = Digraph('G', filename='hello.gv')
-        # x = Foo()
-        b = B()
-        # e = E()
-        b.g(g,client)
+        numero_aleatorio  = randint(0, 101)
 
+        x = Foo()
+        b = B()
+
+        resultado = b.g(x, b, numero_aleatorio)
+
+        print(resultado)
+
+
+class B:
+
+    def g(self, x, y, z):
+        c = C()
+        c.h(x)
+        c.h(y)
+
+        if (z % 2 == 0):
+            return Bar()
+        else: 
+            return Qux()
+
+class C:
+
+    def h(self, y):
+        d = D()
+        d.m(y)
+
+class D:
+
+    def __init__(self):
+        pass
+    
+    def m(self, var):
+        pass
+
+
+class Foo:
+
+    def __init__(self):
+        pass
+
+
+class Bar:
+
+    def __init__(self):
+        pass
+
+class Qux: 
+
+    def __init__(self):
+        pass
+
+
+a = A()
+a.f()

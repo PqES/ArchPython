@@ -19,7 +19,7 @@ class MatrixCellStatusEnum(Enum):
 
     ALLOWED = {
         "Code" : "ALLOWED",
-        "Color" : "#bfbfbf"
+        "Color" : "#eaeaea"
     }
 
     EMPTY = {

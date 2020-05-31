@@ -10,6 +10,6 @@ class MatrixCell:
         return {
             "from" : self.from_module,
             "to" : self.to_module,
-            "color" : self.status_module.value["Color"],
+            "color" : self.status_module["Color"],
             "content" : self.content
         }
