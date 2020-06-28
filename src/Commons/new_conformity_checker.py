@@ -98,10 +98,10 @@ class NewConformityChecker:
     def __get_all_modules_allowed(self, module):
         if module.allowed != None:
             return set(module.allowed)
-        # elif module.forbidden != None:
-        #     modules = self.__all_modules.difference(set(module.forbidden)) 
-        #     modules.remove(module.name)
-        #     return modules
+        elif module.forbidden != None:
+            modules = self.__all_modules.difference(set(module.forbidden)) 
+            modules.remove(module.name)
+            return modules
         else:
             return None
     
