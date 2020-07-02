@@ -96,6 +96,7 @@ class Skywalker(object):
         self.files = files_filtered
     
     def __base_step(self):
+        param_count = 0
         if self.files == None:
             raise Exception(JediErrorEnum.NO_FILES_FOUND.value)
 
@@ -110,6 +111,10 @@ class Skywalker(object):
             current_goto_params_names = []
 
             for current_index, definition in enumerate(script_names):
+
+                if definition.type == "param":
+                    param_count += 1
+
 
                 if definition.description == "super":
                     inherited_class = self.find_inheritance(current_index, script_names)
@@ -134,6 +139,8 @@ class Skywalker(object):
 
                         call = Call(file_path_from, variable_from, current_definition_full_name, file_path_to, variable_to, current_goto_full_name, line_no_from = current_definition.line)
                         self.list_of_calls.append(call)
+                    # elif definition._name.tree_name.parent.type == "atom_expr" and len(current_goto_params_names) > 0:
+                    #     continue
                     else:
                         should_verify_params = False
                         current_definition = None
@@ -168,12 +175,16 @@ class Skywalker(object):
                             continue
 
                             
-                        if inference.module_name != None and "builtins" in inference.module_name:
-                            continue
+                        # if inference.module_name != None:
+                        #     continue
+
+                        #  and "builtins" in inference.module_name:
                         inference_object = self.__create_inference(definition, inference)
                         self.__add_to_list_of_inferences(inference_object)
                 
             self.__type_declarations.append(type_declaration)
+        
+        print(param_count)
 
         print("End of base step")
     
@@ -245,8 +256,8 @@ class Skywalker(object):
         return all_inferences
 
     def __add_to_list_of_inferences(self,new_inference):
-        if "builtins" in new_inference.inferred_module_name or "builtinsi" in new_inference.inferred_module_name or "builtinsi" in new_inference.origin_module:
-            return
+        # if "builtins" in new_inference.inferred_module_name or "builtinsi" in new_inference.inferred_module_name or "builtinsi" in new_inference.origin_module:
+        #     return
 
         for inference in self.list_of_inferences:
             if new_inference.get_key() == inference.get_key():

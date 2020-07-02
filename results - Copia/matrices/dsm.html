@@ -1,6 +1,6 @@
 <html>
     <body>
-        <table border="1" width="500px" height="300px">
+        <table width="300px" height="180px">
             <thead>
                 <tr id="header">
                 </tr>
@@ -15,7 +15,7 @@
     var allFiles = ['', 'Controller', 'DAO', 'Domain', 'Util', 'View', 'pymongo']
     var allPackages = ['pymongo']
 
-    var relationships = [{'from': 'Controller', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'Controller', 'to': 'DAO', 'color': '#bfbfbf', 'content': 2}, {'from': 'Controller', 'to': 'Domain', 'color': '#bfbfbf', 'content': 2}, {'from': 'Controller', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'Controller', 'to': 'View', 'color': '#bfbfbf', 'content': 2}, {'from': 'Controller', 'to': 'pymongo', 'color': 'orange', 'content': 1}, {'from': 'DAO', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'Domain', 'color': '#bfbfbf', 'content': 3}, {'from': 'DAO', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'pymongo', 'color': 'red', 'content': 5}, {'from': 'Domain', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'Domain', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'pymongo', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'Domain', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'pymongo', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'Domain', 'color': '#bfbfbf', 'content': 1}, {'from': 'View', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'pymongo', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'Domain', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'pymongo', 'color': 'white', 'content': ''}]
+    var relationships = [{'from': 'DAO', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'Domain', 'color': 'white', 'content': 3}, {'from': 'DAO', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'DAO', 'to': 'pymongo', 'color': 'red', 'content': 5}, {'from': 'Controller', 'to': 'DAO', 'color': 'white', 'content': 2}, {'from': 'Controller', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'Controller', 'to': 'View', 'color': 'white', 'content': 2}, {'from': 'Controller', 'to': 'Domain', 'color': 'white', 'content': 2}, {'from': 'Controller', 'to': 'Util', 'color': '#dbdbdb', 'content': '?'}, {'from': 'Controller', 'to': 'pymongo', 'color': 'orange', 'content': 1}, {'from': 'View', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'Domain', 'color': 'white', 'content': 1}, {'from': 'View', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'View', 'to': 'pymongo', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'Domain', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'Domain', 'to': 'pymongo', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'Domain', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'Util', 'to': 'pymongo', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'DAO', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'Controller', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'View', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'Domain', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'Util', 'color': 'white', 'content': ''}, {'from': 'pymongo', 'to': 'pymongo', 'color': 'white', 'content': ''}]
 
 
     var header = document.getElementById("header")
@@ -60,7 +60,7 @@
 
         var rightDiv = document.createElement("div")
         rightDiv.style.cssFloat = "right"
-        rightDiv.style.width = "50%"
+        rightDiv.style.width = "20%"
         var rightText = document.createTextNode(allFiles.indexOf(file))
         rightDiv.appendChild(rightText)
         
@@ -107,3 +107,14 @@
     });
 
 </script>
+
+<style>
+table {
+  border-collapse: collapse;
+}
+
+table, td, th {
+  border: 0.8px solid black;
+}
+
+</style>
