@@ -16,15 +16,18 @@ class Skywalker(object):
         self.inferences = {}
         self.list_of_inferences = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
-        
+
         self.file_modules_cache = {} #Cache com os dados arquivo -> Modulo que ele pertence
 
         self.__type_declarations = []
-    
+
+        self.variables = {}
+        self.parameters = {}
+
     def run_jedi(self):
         #Lê os arquivos
         self.__search_project_folder()
-        
+
         #Faz o passe base da inferência
         self.__base_step()
 
@@ -38,10 +41,73 @@ class Skywalker(object):
         self.__write_list_of_detailed_inferences()
 
         self.__write_types_declared()
-    
+
+        self.__write_list_of_variables()
+
+        self.__calculate_stats_variables()
+        self.__calculate_stats_parameters()
+
+    def __calculate_stats_variables(self):
+        all_variables = self.variables
+        all_inferences = self.list_of_inferences
+
+        total = len(all_variables)
+        infered_count = 0
+        missing_count = 0
+
+        inference_keys = []
+
+        for inference in self.list_of_inferences:
+            key = f"{inference.class_name}:{inference.class_function}:{inference.variable_name}"
+            inference_keys.append(key)
+
+        for variable in all_variables.keys():
+            if variable in inference_keys:
+                infered_count +=1
+                # print(f"!!!A variável {variable} foi inferida!!!")
+            else:
+                print(f"A variável {variable} não foi inferida")
+                missing_count +=1
+
+        print(f"Total : {total}")
+        print(f"Infered Count : {infered_count}")
+        print(f"Missing Variables : {missing_count}")
+
+    def __calculate_stats_parameters(self):
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        all_variables = self.parameters
+        all_inferences = self.list_of_inferences
+
+        total = len(all_variables)
+        infered_count = 0
+        missing_count = 0
+
+        inference_keys = []
+
+        for inference in self.list_of_inferences:
+            key = f"{inference.class_name}:{inference.class_function}:{inference.variable_name}"
+            inference_keys.append(key)
+
+        for variable in all_variables.keys():
+            if variable in inference_keys:
+                infered_count +=1
+                # print(f"!!!o parametro {variable} foi inferido!!!")
+            else:
+                print(f"o parametro {variable} não foi inferido")
+                missing_count +=1
+
+        print(f"Total : {total}")
+        print(f"Infered Count : {infered_count}")
+        print(f"Missing Variables : {missing_count}")
+
+
+
     def get_type_declarations(self):
         return self.__type_declarations
-    
+
     def set_modules(self, modules):
         for module in modules:
             if module.files:
@@ -50,38 +116,42 @@ class Skywalker(object):
             if module.packages:
                 for package in module.packages:
                     self.file_modules_cache[package] = module.name
-    
+
     def __write_types_declared(self):
         json_content = []
         for type_declared in self.__type_declarations:
             json_content.append(type_declared.get_json_representation())
-        
+
         with open('./results/types_declared.json', 'w') as output:
             json.dump(json_content, output)
-    
+
     def __write_list_of_inferences(self):
         json_content = []
         for inference in self.list_of_inferences:
             json_content.append(list(inference.get_tuple_representation()))
-        
+
         with open('./results/simple_inferences.json', 'w') as output:
             json.dump(json_content, output)
-        
+
+    def __write_list_of_variables(self):
+        with open('./results/just_variables.json', 'w') as output:
+            json.dump(self.variables, output)
+
     def __write_list_of_detailed_inferences(self):
         json_content = []
         for inference in self.list_of_inferences:
             json_content.append(inference.get_detailed_inference())
-        
+
         with open('./results/detailed_inferences.json', 'w') as output:
             json.dump(json_content, output)
 
 
     def get_inferences(self):
         return self.list_of_inferences
-    
+
     def get_files(self):
         return self.files
-    
+
     def __search_project_folder(self):
         read_py_files = ReadPyFiles(self.project_root_folder)
         read_py_files.find_pys()
@@ -92,24 +162,62 @@ class Skywalker(object):
         for file in all_files:
             if file in self.file_modules_cache.keys():
                 files_filtered.append(file)
-        
+
         self.files = files_filtered
-    
+
+    def __create_variable(self, definition):
+        class_name = self.__find_current_class_name(definition)
+        function_name = self.__find_current_function_name(definition)
+        variable_name = definition.description.split("=")[0].strip()
+
+        key = f"{class_name}:{function_name}:{variable_name}"
+
+        if key not in self.variables.keys():
+            self.variables[key] = {
+                "class_name" : class_name,
+                "function_name" : function_name,
+                "variable_name" : variable_name
+            }
+
+    def __create_param(self, param):
+        class_name = self.__find_current_class_name(param)
+        function_name = self.__find_current_function_name(param)
+        param_name = param.name
+
+        if param_name == "self":
+            return
+
+        key = f"{class_name}:{function_name}:{param_name}"
+
+        if key not in self.parameters.keys():
+            self.parameters[key] = {
+                "class_name" : class_name,
+                "function_name" : function_name,
+                "param_name" : param_name
+            }
+
     def __base_step(self):
         if self.files == None:
             raise Exception(JediErrorEnum.NO_FILES_FOUND.value)
 
         for file_path  in self.files:
-            
+
             type_declaration = TypeDeclaration(file_path)
             script_names = jedi.Script(path=file_path).get_names(all_scopes=True, definitions=True, references=True)
 
             should_verify_params = False
+            is_goto_class = False
             current_definition = None
             current_goto = None
             current_goto_params_names = []
 
             for current_index, definition in enumerate(script_names):
+
+                if ("=" in definition.description and definition.type == "statement"):
+                    self.__create_variable(definition)
+
+                if (definition.type == "param"):
+                    self.__create_param(definition)
 
                 if definition.description == "super":
                     inherited_class = self.find_inheritance(current_index, script_names)
@@ -121,8 +229,13 @@ class Skywalker(object):
                     type_declaration.add_type_declared(definition.name)
 
                 if should_verify_params and current_definition and current_goto:
-                    if definition._name.tree_name.parent.type == "arglist" or definition._name.tree_name.parent.type == "trailer":
-                        
+                    skip_parameter = False
+                    if is_goto_class and len(current_goto_params_names) == 0:
+                        skip_parameter = True
+
+
+                    if not skip_parameter and (definition._name.tree_name.parent.type == "arglist" or definition._name.tree_name.parent.type == "trailer"):
+
                         file_path_from = current_definition.module_path
                         variable_from = definition.name
                         current_definition_full_name = self.__generate_function_name(current_definition)
@@ -143,13 +256,21 @@ class Skywalker(object):
 
                 if (len(definitions_goto) > 0):
                     for goto in definitions_goto:
-                        #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso 
-                        if goto.type == "function" and goto != definition:
+                        #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso
+                        if (goto.type == "function") and goto != definition:
                             current_definition = definition
                             current_goto = goto
                             current_goto_params_names = goto.params[::-1]
 
                             should_verify_params = True
+
+                        if goto.type == "class":
+                            current_definition = definition
+                            current_goto = goto
+                            current_goto_params_names = goto.params[::-1]
+
+                            should_verify_params = True
+                            is_goto_class = True
 
                 if not self.__should_ignore_definition(definition) :
                     inferences = definition.infer()
@@ -167,16 +288,16 @@ class Skywalker(object):
                                 self.__add_to_list_of_inferences(inference_object)
                             continue
 
-                            
-                        if inference.module_name != None and "builtins" in inference.module_name:
-                            continue
+
+                        # if inference.module_name != None and "builtins" in inference.module_name:
+                        #     continue
                         inference_object = self.__create_inference(definition, inference)
                         self.__add_to_list_of_inferences(inference_object)
-                
+
             self.__type_declarations.append(type_declaration)
 
         print("End of base step")
-    
+
     def __is_a_new_type_declared(self, definition, current_file_path):
         if definition.type == "class":
             definitions_goto = definition.goto(follow_imports=True, follow_builtin_imports=True)
@@ -184,7 +305,7 @@ class Skywalker(object):
                 if goto.module_path == current_file_path:
                     return True
         return False
-    
+
     def find_inheritance(self, current_definition_index, script_names):
         for index in range(current_definition_index, len(script_names)):
             current_definition = script_names[index]
@@ -193,10 +314,10 @@ class Skywalker(object):
 
                 if (len(definitions_goto) > 0):
                     for goto in definitions_goto:
-                        #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso 
+                        #Se chegar até aqui é pq tem uma chamada de função e devemos registrar isso
                         if goto.type == "function" and goto != current_definition:
                             return goto
-    
+
     def __check_if_return_exists_inline(self, file_path, line_no):
         with open(file_path) as file:
             lines = file.readlines()
@@ -233,10 +354,10 @@ class Skywalker(object):
                     self.__add_to_list_of_inferences(new_inference)
         if len(self.list_of_inferences) != current_len_of_types:
             self.__recursive_step(len(self.list_of_inferences))
-        
+
         print("End of recursive step")
-        
-    
+
+
     def __find_inference(self, call):
         all_inferences = []
         for inference in self.list_of_inferences:
@@ -245,13 +366,13 @@ class Skywalker(object):
         return all_inferences
 
     def __add_to_list_of_inferences(self,new_inference):
-        if "builtins" in new_inference.inferred_module_name or "builtinsi" in new_inference.inferred_module_name or "builtinsi" in new_inference.origin_module:
-            return
+        # if "builtins" in new_inference.inferred_module_name or "builtinsi" in new_inference.inferred_module_name or "builtinsi" in new_inference.origin_module:
+        #     return
 
         for inference in self.list_of_inferences:
             if new_inference.get_key() == inference.get_key():
                 return
-        
+
         self.list_of_inferences.append(new_inference)
 
     def __create_tuple_from_self(self, definition):
@@ -259,7 +380,7 @@ class Skywalker(object):
         variable_name = definition.name
         inference = self.__find_current_class_name(definition)
         return (file_class_function_key, variable_name, inference)
-    
+
     def __create_inference_from_return(self, definition, inference):
         file_path = definition.module_path
         file_name = definition.module_path.split("/")[-1].replace('.py', '')
@@ -280,7 +401,7 @@ class Skywalker(object):
             inference.set_inferred_module_name(self.file_modules_cache[inference_path])
 
         return inference
-    
+
     def __create_inference_from_external_package(self,definition, inference, from_super=False):
         file_path = definition.module_path
         file_name = definition.module_path.split("/")[-1].replace('.py', '')
@@ -301,13 +422,13 @@ class Skywalker(object):
             new_inference.set_inferred_module_name(module_inferred)
         return new_inference
 
-    
+
     def __create_inference(self, definition, inference, from_super=False):
-        
+
         if inference.module_path != None and "site-packages" in inference.module_path and inference.module_name != "builtins":
             inference = self.__create_inference_from_external_package(definition, inference, from_super)
             return inference
-        
+
         if inference.module_name != None and "builtins" in inference.module_name:
             inference = self.__create_inference_from_external_package(definition, inference, from_super)
             return inference
@@ -331,8 +452,8 @@ class Skywalker(object):
             inference.set_inferred_module_name(self.file_modules_cache[inference_path])
 
         return inference
-    
-    
+
+
     def __should_ignore_definition(self, inference):
         if inference.description == "__name__":
             return True
@@ -341,39 +462,44 @@ class Skywalker(object):
         if inference.type == "statement" or inference.type == "param":
             return False
         return True
-    
-    #Talvez essa função dê problema quando existir dois arquivos com mesmo nome, classe, funcao 
+
+    #Talvez essa função dê problema quando existir dois arquivos com mesmo nome, classe, funcao
     def __generate_function_name(self, definition):
         file_name = definition.module_path.split("/")[-1].replace('.py', '')
         current_class_name = self.__find_current_class_name(definition)
-        current_function_name = self.__find_current_function_name(definition)
-        
+        current_function_name = ""
+
+        if "class" in definition.description and definition.type == "class":
+            current_function_name = "__init__"
+        else:
+            current_function_name = self.__find_current_function_name(definition)
+
         key = f"{file_name}::{current_class_name}::{current_function_name}"
 
         return key
-    
+
     def __find_current_class_name(self, definition):
         if definition.type == "class":
             return definition.name
         parent = definition.parent()
         if parent:
             return self.__find_current_class_name(parent)
-        else: 
+        else:
             return "root"
-    
+
     def __find_current_function_name(self, definition):
         if definition.type == "function":
             return definition.name
         parent = definition.parent()
         if parent:
             return self.__find_current_function_name(definition.parent())
-        else: 
+        else:
             return "root"
-    
+
     def get_jedi_results(self):
         for index in self.files:
             print(self.files[index].get_as_dict())
-    
+
 
 
 
