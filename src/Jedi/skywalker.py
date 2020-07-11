@@ -10,12 +10,13 @@ from Models.type_declaration import TypeDeclaration
 #TODO mudar o nome dessa classe
 class Skywalker(object):
 
-    def __init__(self, project_root_folder):
+    def __init__(self, project_root_folder, project_name):
         self.project_root_folder = project_root_folder
         self.files = None
         self.inferences = {}
         self.list_of_inferences = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
+        self.project_name = project_name
         
         self.file_modules_cache = {} #Cache com os dados arquivo -> Modulo que ele pertence
 
@@ -56,7 +57,7 @@ class Skywalker(object):
         for type_declared in self.__type_declarations:
             json_content.append(type_declared.get_json_representation())
         
-        with open('./results/types_declared.json', 'w') as output:
+        with open(f'./results/{self.project_name}/extra/types_declared.json', 'w') as output:
             json.dump(json_content, output)
     
     def __write_list_of_inferences(self):
@@ -64,7 +65,7 @@ class Skywalker(object):
         for inference in self.list_of_inferences:
             json_content.append(list(inference.get_tuple_representation()))
         
-        with open('./results/simple_inferences.json', 'w') as output:
+        with open(f'./results/{self.project_name}/extra/simple_inferences.json', 'w') as output:
             json.dump(json_content, output)
         
     def __write_list_of_detailed_inferences(self):
@@ -72,7 +73,7 @@ class Skywalker(object):
         for inference in self.list_of_inferences:
             json_content.append(inference.get_detailed_inference())
         
-        with open('./results/detailed_inferences.json', 'w') as output:
+        with open(f'./results/{self.project_name}/extra/detailed_inferences.json', 'w') as output:
             json.dump(json_content, output)
 
 

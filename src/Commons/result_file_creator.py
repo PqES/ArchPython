@@ -1,4 +1,6 @@
 import json
+import os
+import errno
 from Enums.problems_enum import ProblemsEnum
 
 class ResultFileCreator:
@@ -11,14 +13,23 @@ class ResultFileCreator:
     
         self.__file_inferences_dict = {}
 
-    def create_json_file(self):
+    def create_json_file(self, project_name):
         self.__create_file_inference_dict()
         self.find_divergences()
         self.find_abscences()
-        self.write_result()
+        self.write_result(project_name)
     
-    def write_result(self):
-        with open('./results/teste.json', 'w') as output:
+    def write_result(self, project_name):
+
+        file_path = f'./results/{project_name}/main/violation_report.json'
+        if not os.path.exists(os.path.dirname(file_path)):
+            try:
+                os.makedirs(os.path.dirname(file_path))
+            except OSError as exc:
+                if exc.errno != errno.EEXIST:
+                    raise
+
+        with open(file_path, 'w') as output:
             json.dump(self.file_content, output)
 
         

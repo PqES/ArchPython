@@ -6,7 +6,7 @@ from Enums.edge_status_enum import EdgeStatusEnum
 class NewReflectionGraphCreator:
 
     def __init__(self, conformity__info, module_definitions):
-        self.graph = Graph("New Reflection Graph")
+        self.graph = Graph("Reflection Model")
 
         self.__nodes_cache = {}
         self.__module_definitions = module_definitions

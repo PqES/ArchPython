@@ -1,10 +1,13 @@
+import os
+import errno
+
 class MatrixCreatorUtil(object):
 
     @staticmethod
-    def create_matrix_file(matrix):
+    def create_matrix_file(matrix, project_name):
         matrix_file_template = MatrixCreatorUtil.__get_matrix_template()
         matrix_file_modified = MatrixCreatorUtil.__modify_template(matrix, matrix_file_template)
-        MatrixCreatorUtil.__write_matrix_file(matrix.name, matrix_file_modified)
+        MatrixCreatorUtil.__write_matrix_file(matrix.name, matrix_file_modified, project_name)
     
     @staticmethod
     def __get_matrix_template():
@@ -25,9 +28,17 @@ class MatrixCreatorUtil(object):
         return final_file
 
     @staticmethod
-    def __write_matrix_file(matrix_name, matrix_final_file):
+    def __write_matrix_file(matrix_name, matrix_final_file, project_name):
         file_name = f"{matrix_name.replace(' ', '_').lower()}.html"
-        file_path = f"./results/matrices/{file_name}"
+        file_path = f"./results/{project_name}/main/{file_name}"
+
+        if not os.path.exists(os.path.dirname(file_path)):
+            try:
+                os.makedirs(os.path.dirname(file_path))
+            except OSError as exc:
+                if exc.errno != errno.EEXIST:
+                    raise
+
         with open(file_path, 'w+') as output:
             output.write(matrix_final_file)
 
