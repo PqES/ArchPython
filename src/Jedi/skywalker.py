@@ -185,9 +185,9 @@ class Skywalker(object):
                 
             self.__type_declarations.append(type_declaration)
         
-        print(param_count)
+        # print(param_count)
 
-        print("End of base step")
+        # print("End of base step")
     
     def __is_a_new_type_declared(self, definition, current_file_path):
         if definition.type == "class":
@@ -246,7 +246,7 @@ class Skywalker(object):
         if len(self.list_of_inferences) != current_len_of_types:
             self.__recursive_step(len(self.list_of_inferences))
         
-        print("End of recursive step")
+        # print("End of recursive step")
         
     
     def __find_inference(self, call):
@@ -384,7 +384,8 @@ class Skywalker(object):
     
     def get_jedi_results(self):
         for index in self.files:
-            print(self.files[index].get_as_dict())
+            print("")
+            # print(self.files[index].get_as_dict())
     
 
 

@@ -104,6 +104,8 @@ if __name__ == "__main__":
     module_definitions = read_module_definition_file(module_definition_file, target_project_root_path, result_project_name)
     inferences, types_declared = read_project_folder(target_project_root_path, module_definitions, result_project_name)
     cross_information(module_definitions, inferences, result_project_name)    
+
+    print("ArchPython successfully executed!")
     
 
     # print(project_folder)
