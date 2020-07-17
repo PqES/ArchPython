@@ -67,18 +67,14 @@ class Skywalker(object):
                 infered_count +=1
                 # print(f"!!!A variável {variable} foi inferida!!!")
             else:
-                print(f"A variável {variable} não foi inferida")
+                # print(f"A variável {variable} não foi inferida")
                 missing_count +=1
 
-        print(f"Total : {total}")
-        print(f"Infered Count : {infered_count}")
-        print(f"Missing Variables : {missing_count}")
+        # print(f"Total : {total}")
+        # print(f"Infered Count : {infered_count}")
+        # print(f"Missing Variables : {missing_count}")
 
     def __calculate_stats_parameters(self):
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         all_variables = self.parameters
         all_inferences = self.list_of_inferences
 
@@ -97,12 +93,12 @@ class Skywalker(object):
                 infered_count +=1
                 # print(f"!!!o parametro {variable} foi inferido!!!")
             else:
-                print(f"o parametro {variable} não foi inferido")
+                # print(f"o parametro {variable} não foi inferido")
                 missing_count +=1
 
-        print(f"Total : {total}")
-        print(f"Infered Count : {infered_count}")
-        print(f"Missing Variables : {missing_count}")
+        # print(f"Total : {total}")
+        # print(f"Infered Count : {infered_count}")
+        # print(f"Missing Variables : {missing_count}")
 
 
 
@@ -300,9 +296,9 @@ class Skywalker(object):
 
             self.__type_declarations.append(type_declaration)
         
-        print(param_count)
+        # print(param_count)
 
-        print("End of base step")
+        # print("End of base step")
 
     def __is_a_new_type_declared(self, definition, current_file_path):
         if definition.type == "class":
@@ -361,7 +357,7 @@ class Skywalker(object):
         if len(self.list_of_inferences) != current_len_of_types:
             self.__recursive_step(len(self.list_of_inferences))
 
-        print("End of recursive step")
+        # print("End of recursive step")
 
 
     def __find_inference(self, call):
@@ -504,7 +500,8 @@ class Skywalker(object):
 
     def get_jedi_results(self):
         for index in self.files:
-            print(self.files[index].get_as_dict())
+            print("")
+            # print(self.files[index].get_as_dict())
 
 
 
