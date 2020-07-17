@@ -1,0 +1,25 @@
+{
+  "DAO": {
+    "files": [".\\db\\*.py", ".\\models\\dao\\*.py"],
+    "allowed": ["Domain"],
+    "required": ["pymongo"]
+  },
+  "Controller": {
+    "files": [".\\controllers\\*.py"],
+    "required" : ["View"],
+    "forbidden": ["pymongo"]
+  },
+  "View": {
+    "files": [".\\views\\*.py"],
+    "allowed": ["Domain"]
+  },
+  "Domain": {
+    "files": [".\\models\\domain_objects\\*.py"]
+  },
+  "Util" : {
+    "files": [".\\util\\*.py"]
+  },
+  "pymongo": {
+    "packages": ["pymongo", "bson"]
+  }
+}

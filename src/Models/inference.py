@@ -43,7 +43,6 @@ class Inference(object):
             "variable_inferred_type": self.variable_type,
             "variable_inferred_path" : self.inference_variable_path,
             "inferred_module_name" : self.inferred_module_name
-
         }
 
 

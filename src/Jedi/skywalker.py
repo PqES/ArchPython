@@ -10,13 +10,14 @@ from Models.type_declaration import TypeDeclaration
 #TODO mudar o nome dessa classe
 class Skywalker(object):
 
-    def __init__(self, project_root_folder):
+    def __init__(self, project_root_folder, project_name):
         self.project_root_folder = project_root_folder
         self.files = None
         self.inferences = {}
         self.list_of_inferences = []
         self.list_of_calls = [] #Lista de chamadas para outros arquivos.
-
+        self.project_name = project_name
+        
         self.file_modules_cache = {} #Cache com os dados arquivo -> Modulo que ele pertence
 
         self.__type_declarations = []
@@ -122,7 +123,7 @@ class Skywalker(object):
         for type_declared in self.__type_declarations:
             json_content.append(type_declared.get_json_representation())
 
-        with open('./results/types_declared.json', 'w') as output:
+        with open(f'./results/{self.project_name}/extra/types_declared.json', 'w') as output:
             json.dump(json_content, output)
 
     def __write_list_of_inferences(self):
@@ -130,7 +131,7 @@ class Skywalker(object):
         for inference in self.list_of_inferences:
             json_content.append(list(inference.get_tuple_representation()))
 
-        with open('./results/simple_inferences.json', 'w') as output:
+        with open(f'./results/{self.project_name}/extra/simple_inferences.json', 'w') as output:
             json.dump(json_content, output)
 
     def __write_list_of_variables(self):
@@ -142,7 +143,7 @@ class Skywalker(object):
         for inference in self.list_of_inferences:
             json_content.append(inference.get_detailed_inference())
 
-        with open('./results/detailed_inferences.json', 'w') as output:
+        with open(f'./results/{self.project_name}/extra/detailed_inferences.json', 'w') as output:
             json.dump(json_content, output)
 
 
@@ -197,6 +198,7 @@ class Skywalker(object):
             }
 
     def __base_step(self):
+        param_count = 0
         if self.files == None:
             raise Exception(JediErrorEnum.NO_FILES_FOUND.value)
 
@@ -213,11 +215,9 @@ class Skywalker(object):
 
             for current_index, definition in enumerate(script_names):
 
-                if ("=" in definition.description and definition.type == "statement"):
-                    self.__create_variable(definition)
+                if definition.type == "param":
+                    param_count += 1
 
-                if (definition.type == "param"):
-                    self.__create_param(definition)
 
                 if definition.description == "super":
                     inherited_class = self.find_inheritance(current_index, script_names)
@@ -247,6 +247,8 @@ class Skywalker(object):
 
                         call = Call(file_path_from, variable_from, current_definition_full_name, file_path_to, variable_to, current_goto_full_name, line_no_from = current_definition.line)
                         self.list_of_calls.append(call)
+                    # elif definition._name.tree_name.parent.type == "atom_expr" and len(current_goto_params_names) > 0:
+                    #     continue
                     else:
                         should_verify_params = False
                         current_definition = None
@@ -288,13 +290,17 @@ class Skywalker(object):
                                 self.__add_to_list_of_inferences(inference_object)
                             continue
 
-
-                        # if inference.module_name != None and "builtins" in inference.module_name:
+                            
+                        # if inference.module_name != None:
                         #     continue
+
+                        #  and "builtins" in inference.module_name:
                         inference_object = self.__create_inference(definition, inference)
                         self.__add_to_list_of_inferences(inference_object)
 
             self.__type_declarations.append(type_declaration)
+        
+        print(param_count)
 
         print("End of base step")
 

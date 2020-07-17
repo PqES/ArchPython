@@ -2,10 +2,6 @@ from class_d import D
 
 class C:
 
-    def h(self, y):
+    def h(self, w):
         d = D()
-        kk = D()
-        d.m(y)
-    
-    def t(self):
-        return D()
+        d.m(w)
