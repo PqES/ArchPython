@@ -19,19 +19,27 @@ class InferenceGraphCreator:
     
     def create_nodes(self):
         for inference in self.inferences:
+            
             origin_module = inference.origin_module
             inferred_module = inference.inferred_module_name
 
             if not origin_module in self.__nodes_cache.keys():
+                if "builtins" in origin_module:
+                    continue
                 new_node = self.graph.add_node(origin_module)
                 self.__nodes_cache[origin_module] = new_node
             
             if not inferred_module in self.__nodes_cache.keys():
+                if "builtins" in inferred_module:
+                    continue
                 new_node = self.graph.add_node(inferred_module)
                 self.__nodes_cache[inferred_module] = new_node
     
     def create_edges(self):
         for inference in self.inferences:
+
+            if "builtins" in inference.origin_module or "builtins" in inference.inferred_module_name:
+                continue
 
             origin_node = self.__nodes_cache[inference.origin_module] 
             final_node = self.__nodes_cache[inference.inferred_module_name]
