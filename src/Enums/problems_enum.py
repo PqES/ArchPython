@@ -17,6 +17,11 @@ class ProblemsEnum(Enum):
         "Message" : "A mandatory restriction was not used"
     }
 
+    WARNING = {
+        "Code" : "WARNING",
+        "Message" : "Module {} does not use the allowed module {}"
+    }
+
 
     DIVERGENCE = {
         "Code" : "DIVERGENCE",
