@@ -26,11 +26,11 @@ def get_file_absolute_path(module_definition_json_path : str):
     file_absolute_path = os.path.abspath(goal_path)
     return file_absolute_path
 
-def read_module_definition_file(module_definition_json_path, project_root_folder, result_project_name):
+def read_module_definition_file(module_definition_json_path, project_root_folder, result_project_name, report_input_warnings):
     module_definition_json_path = get_file_absolute_path(module_definition_json_path)
 
     file_content = InputReader.get_json_content(module_definition_json_path)
-    module_definitions = ModuleDefinitionLoader.get_module_definitions(file_content, project_root_folder)
+    module_definitions = ModuleDefinitionLoader.get_module_definitions(file_content, project_root_folder, report_input_warnings)
 
     graph = ModuleGraphCreator(module_definitions).create_graph_from_module()
 
@@ -90,19 +90,28 @@ if __name__ == "__main__":
         raise Exception("Invalid number of arguments")
 
     report_conformity_warnings = False
+    report_input_warnings = False
+
+
 
     if len(sys.argv) > 3:
         args_content = sys.argv[3]
         if args_content == "--report-conformity-warnings" or args_content == "-rcw":
             report_conformity_warnings = True
             print("Including warnings on JSON report")
+    
+    if len(sys.argv) > 4:
+        args_content = sys.argv[4]
+        if args_content == "--report-input-warnings" or args_content == "-riw":
+            report_input_warnings = True
+            print("Reporting input warnings....")
 
 
     module_definition_file = sys.argv[1]
     target_project_root_path = sys.argv[2]
 
     result_project_name = get_result_project_name(target_project_root_path)
-    module_definitions = read_module_definition_file(module_definition_file, target_project_root_path, result_project_name)
+    module_definitions = read_module_definition_file(module_definition_file, target_project_root_path, result_project_name, report_input_warnings)
     inferences, types_declared = read_project_folder(target_project_root_path, module_definitions, result_project_name)
     cross_information(module_definitions, inferences, result_project_name, report_conformity_warnings)
 

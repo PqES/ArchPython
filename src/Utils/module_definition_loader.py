@@ -9,7 +9,7 @@ from Enums.module_definition_enum import ModuleDefinitionEnum
 class ModuleDefinitionLoader(object):
 
     @staticmethod
-    def get_module_definitions(file_content, project_root_folder):
+    def get_module_definitions(file_content, project_root_folder, report_input_warnings):
         module_definitions = []
         for module in file_content:
             try:
@@ -18,7 +18,7 @@ class ModuleDefinitionLoader(object):
                 print(f"An exception was raised for {module} : {str(e)}")
                 sys.exit(1)
 
-            module = ModuleDefinitionLoader.__create_module(file_content, module, project_root_folder)
+            module = ModuleDefinitionLoader.__create_module(file_content, module, project_root_folder, report_input_warnings)
             module_definitions.append(module)
         module_definitions = ModuleDefinitionLoader.__assign_restriction_files(module_definitions)
         return module_definitions
@@ -91,16 +91,31 @@ class ModuleDefinitionLoader(object):
         return []
     
     @staticmethod
-    def __create_module(file_content, module, project_root_folder):
+    def __create_module(file_content, module, project_root_folder, report_input_warnings = False):
         name = module
         package = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.PACKAGE_KEYWORD.value)
+        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, package, ModuleDefinitionEnum.PACKAGE_KEYWORD.value, report_input_warnings)
+
         files = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FILES_KEYWORD.value, project_root_folder)
+        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, files, ModuleDefinitionEnum.FILES_KEYWORD.value, report_input_warnings)
+
         allowed = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.ALLOWED_KEYWORD.value)
+        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, allowed, ModuleDefinitionEnum.ALLOWED_KEYWORD.value, report_input_warnings)
+
         forbidden = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value)
+        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, forbidden, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value, report_input_warnings)
+        
         required = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.REQUIRED_KEYWORD.value)
+        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, required, ModuleDefinitionEnum.REQUIRED_KEYWORD.value, report_input_warnings)
+
+
         return Module(name, package, files, allowed, forbidden, required)
 
-    
+    @staticmethod
+    def __check_if_keyword_is_missing(module_name, module_value, keyword, report_input_warnings):
+        if report_input_warnings and module_value == None:
+            print(f"Warning: Module {module_name} does not have a {keyword} definition")
+
     @staticmethod
     def __check_for_errors(file_content, current_key):
 
