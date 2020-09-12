@@ -94,16 +94,20 @@ class ModuleDefinitionLoader(object):
     def __create_module(file_content, module, project_root_folder, report_input_warnings = False):
         name = module
         package = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.PACKAGE_KEYWORD.value)
-        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, package, ModuleDefinitionEnum.PACKAGE_KEYWORD.value, report_input_warnings)
+        # ModuleDefinitionLoader.__check_if_keyword_is_missing(module, package, ModuleDefinitionEnum.PACKAGE_KEYWORD.value, report_input_warnings)
 
         files = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FILES_KEYWORD.value, project_root_folder)
-        ModuleDefinitionLoader.__check_if_keyword_is_missing(module, files, ModuleDefinitionEnum.FILES_KEYWORD.value, report_input_warnings)
+        # ModuleDefinitionLoader.__check_if_keyword_is_missing(module, files, ModuleDefinitionEnum.FILES_KEYWORD.value, report_input_warnings)
 
         allowed = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.ALLOWED_KEYWORD.value)
         ModuleDefinitionLoader.__check_if_keyword_is_missing(module, allowed, ModuleDefinitionEnum.ALLOWED_KEYWORD.value, report_input_warnings)
 
         forbidden = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value)
         ModuleDefinitionLoader.__check_if_keyword_is_missing(module, forbidden, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value, report_input_warnings)
+
+        if allowed == None and forbidden == None:
+            ModuleDefinitionLoader.__check_if_keyword_is_missing(module, forbidden, ModuleDefinitionEnum.FORBIDDEN_KEYWORD.value, report_input_warnings)
+            ModuleDefinitionLoader.__check_if_keyword_is_missing(module, allowed, ModuleDefinitionEnum.ALLOWED_KEYWORD.value, report_input_warnings)
         
         required = ModuleDefinitionLoader.__try_get_value_from_module(file_content, module, ModuleDefinitionEnum.REQUIRED_KEYWORD.value)
         ModuleDefinitionLoader.__check_if_keyword_is_missing(module, required, ModuleDefinitionEnum.REQUIRED_KEYWORD.value, report_input_warnings)
